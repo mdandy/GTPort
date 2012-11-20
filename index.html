@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GTPort</title>
+    <link rel="stylesheet" href="css/bootstrap.css" media="screen">
+	<link rel="stylesheet" href="css/style.css" media="screen">
+	<script type="application/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+	<script type="application/javascript" src="js/bootstrap.min.js"></script>
+	<script type="application/javascript" src="js/ui_manager.js"></script>
+</head>
+
+<body>
+	<header>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container-fluid">				
+					<p class="brand"><img src="img/logo.png" alt="GTPort" width="100px" /></p>
+					
+					<div class="nav-collapse collapse">
+						<button class="btn btn-info pull-right logout">Logout!</button>
+						<p class="navbar-text pull-right username">
+							Hi <a href="#" class="navbar-link">Username</a>
+						</p>
+						
+		
+						<!--
+						<ul class="nav">
+							<li class="active"><a href="#">Menu 1</a></li>
+							<li><a href="#about">Menu 2</a></li>
+							<li><a href="#contact">Menu 3</a></li>
+						</ul>
+						-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+		
+	<div id="container">
+		<div id="sidebar">
+			<div class="well sidebar-nav">
+				<ul id="sidebar_nav" class="nav nav-list">
+					<li class="nav-header">Header 1</li>
+					<li class="active"><a onclick="UIManager.select_page(this, 'add_course.html');">Link 1</a></li>
+					<li><a onclick="UIManager.select_page(this, 'add_course.html');">Link 2</a></li>
+					<li><a onclick="UIManager.select_page(this, 'add_course.html');">Link 3</a></li>
+					<li><a onclick="UIManager.select_page(this, 'add_course.html');">Link 4</a></li>
+				</ul>
+			</div>
+		</div>
+		
+		<div id="main">
+		</div>
+    </div>
+	
+	<script type="application/javascript">
+		$(document).ready(function() {
+			UIManager.load_page();
+		});
+	</script>
+</body>
+</html>
