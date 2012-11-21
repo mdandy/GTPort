@@ -29,11 +29,12 @@ var UIManager =
 		// Load the page
 		if (page_name !== undefined)
 		{
-			UIManager.load_page(page_name, UIManager.multiselect_tutor_courses);
+			if (page_name === "personal_info_student.html")
+				UIManager.load_page(page_name, UIManager.init_personal_info_student);
 		}
 	},
 	
-	multiselect_tutor_courses: function()
+	init_personal_info_student: function()
 	{
 		$("#tutor_courses").pickList({
 			sourceListLabel:    "Eligilble",
