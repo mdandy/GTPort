@@ -2,12 +2,17 @@ var UIManager =
 {
 	url:				"",
 	
-	load_page: function(page_name)
+	load_page: function(page_name, callback)
 	{
-		if (page_name === undefined) 
-			$("#main").load("page/create_account_student.html");
+		if (page_name !== undefined) 
+		{
+			if (callback === undefined)
+				$("#main").load("page/" + page_name);
+			else
+				$("#main").load("page/" + page_name, callback);
+		}
 		else
-			$("#main").load("page/" + page_name);
+			$("#main").load("page/lorem_ipsum.html");
 	},
 	
 	select_page: function(element, page_name)
@@ -23,6 +28,16 @@ var UIManager =
 		
 		// Load the page
 		if (page_name !== undefined)
-			UIManager.load_page(page_name);
+		{
+			UIManager.load_page(page_name, UIManager.multiselect_tutor_courses);
+		}
+	},
+	
+	multiselect_tutor_courses: function()
+	{
+		$("#tutor_courses").pickList({
+			sourceListLabel:    "Eligilble",
+        	targetListLabel:    "Applied",	
+		});
 	}
 }
