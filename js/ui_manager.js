@@ -31,8 +31,8 @@ var UIManager =
 		{
 			if (page_name === "personal_info_student.html")
 				UIManager.load_page(page_name, UIManager.init_personal_info_student);
-				
-			UIManager.load_page(page_name);
+			else
+				UIManager.load_page(page_name);
 		}
 	},
 	
