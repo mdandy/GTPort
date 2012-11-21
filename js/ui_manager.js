@@ -5,7 +5,7 @@ var UIManager =
 	load_page: function(page_name)
 	{
 		if (page_name === undefined) 
-			$("#main").load("page/create_account.html");
+			$("#main").load("page/create_account_student.html");
 		else
 			$("#main").load("page/" + page_name);
 	},
