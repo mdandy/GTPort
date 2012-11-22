@@ -1,0 +1,656 @@
+//------------
+// Login
+//------------
+
+// If User clicks "Login" on Fig.1
+SELECT Username 
+FROM User 
+WHERE username=$username AND password=$password;
+
+
+//------------
+// Create Account
+//------------
+
+// If User clicks "Create Account" on Fig.1
+INSERT INTO User (Username, Password) 
+    VALUES ($username, $password);
+
+// Save Username in the Session Variable
+// Save Type of User in the Session Variable
+
+
+//------------
+// Student Profile
+//------------
+
+// If Type of User == Student, go to Student Profile
+
+// 1. View Student Profile
+// 1.a. View Student Information
+SELECT Name, Email_Id, DOB, Address, 
+    Permanent_Address, Gender, Contact_No,
+    Major, Degree FROM RegularUser AS R NATURAL JOIN Student AS S
+    WHERE R.Username=$username;
+
+// 1.b. View Previous Education
+SELECT Name_of_School, Year_of_Grad, Major, Degree, GPA
+    FROM RegularUser NATURAL JOIN Education_History
+    WHERE Username=$username AND
+        Name_of_School=$name_school AND
+        Year_of_Grad=$year_grad;
+
+// 1.c. View Tutor Application
+SELECT Code FROM Course_Code NATURAL JOIN Course WHERE Title IN (
+    SELECT Title FROM Course_Section WHERE CRN IN (
+        SELECT CRN FROM Student_Section 
+            WHERE (Grade='A' OR Grade='B') AND Student_Id=(
+                SELECT Student_Id FROM Student WHERE Username=$username
+        )
+    )
+);
+
+// 2. Insert Student Profile
+// 2.a. Insert Student Information
+INSERT INTO RegularUser (  
+    Username, Name, Email_Id, DOB, Address, 
+    Permanent_Address, Gender, Contact_No 
+) VALUES (
+    $username, $name, $email, $DOB, $address, 
+    $permanentAddr, $gender, $contactNumber
+);
+
+INSERT INTO Student (
+    Username, Major, Degree
+) VALUES (
+    $username, $major, $degree
+);
+
+// 2.b. Insert Previous Education
+INSERT INTO Education_History (
+    Student_Id, Name_of_School, Year_of_Grad, Major, Degree, GPA
+) VALUES (
+    (SELECT Student_Id FROM Student WHERE Username=$username),
+    $name_school, $year_grad, $major, $degree, $gpa
+);
+
+// 2.c. Insert Tutor Application
+// for each Course Code
+INSERT INTO Tutor_Application (
+    Student_Id, Title
+) VALUES (
+    (SELECT Student_Id FROM Student WHERE Username=$username),
+    (SELECT Title FROM Course_Code WHERE Code=$code)
+);
+
+// 3. Update Student Profile
+// 3.a. Update Student Information
+UPDATE RegularUser
+SET Name=$name, 
+    Email_Id=$email, 
+    DOB=$DOB, 
+    Address=$address, 
+    Permanent_Address=$permanentAddr,
+    Gender=$gender,
+    Contact_No=$contactNumber
+WHERE Username=$username;
+
+UPDATE Student
+SET Major=$major,
+    Degree=$degree
+WHERE Username=$username;
+
+// 3.b. Update Previous Education
+UPDATE Education_History
+SET Major=$major, 
+    Degree=$degree, 
+    GPA=$gpa
+WHERE Student_Id=(SELECT Student_Id FROM Student WHERE Username=$username)
+AND Name_of_School=$name_school AND Year_of_Grad=$year_grad;
+
+
+//------------
+// Faculty Profile
+//------------
+
+// If Type of User == Faculty, go to Faculty Profile
+
+// 1. View Instructor Profile
+// 1.a. View Instruction Info
+SELECT Name, Email_Id, DOB, Address, Permanent_Address, Gender, 
+    Contact_No, Position, Research_Interest, Dept_Name, Letter, Course
+FROM (
+    SELECT Name, Email_Id, DOB, Address, Permanent_Address, Gender, 
+        Contact_No, Position, Instructor_Id
+    FROM RegularUser AS R NATURAL JOIN Faculty AS F
+    WHERE R.Username=$username
+) AS FACULTY_INFO 
+JOIN (
+    SELECT Research_Interest, Name AS Dept_Name, Instructor_Id
+    FROM Research_Interests 
+        NATURAL JOIN Department_Faculty 
+        NATURAL JOIN Department
+) AS FACULTY_EXTRA ON FACULTY_INFO.Instructor_Id=FACULTY_EXTRA.Instructor_Id  
+JOIN (
+    SELECT Letter, Instructor_Id, CRN
+    FROM Faculty_Section NATURAL JOIN Section
+) AS FACULTY_SECTION ON FACULTY_INFO.Instructor_Id=FACULTY_SECTION.Instructor_Id
+JOIN (
+    SELECT CRN, Title
+    FROM Course_Section
+) AS COURSE_TITLE ON FACULTY_SECTION.CRN=COURSE_TITLE.CRN
+JOIN (
+    SELECT Title, Code AS Course
+    FROM Course_Code
+) AS COURSE_CODE ON COURSE_TITLE.Title=COURSE_CODE.Title;
+        
+
+// 1.b. Populate Department
+// Prepopulated dropdown menu based on Department table
+// <option value="Dept_Id">Name</option>
+SELECT Dept_Id, Name FROM Department;
+
+
+// 1.c. Populate Course Code
+// Prepopulated dropdown menu based on Department chosen in Fig.4b
+// <option value="Title">Code</option>
+SELECT Title, Code FROM Course_Code NATURAL JOIN Department_Course
+    WHERE Dept_Id=$dept_Id;
+
+
+// 1.d. Populate Section
+// Prepopulated dropdown menu based on Course chosen in Fig.4b
+// <option value="CRN">Letter</option>
+SELECT CRN, Letter FROM Section NATURAL JOIN Course_Section
+    WHERE Title=$course_title;
+
+
+// 2. Insert Faculty Profile
+// 2.a. Insert Faculty Info and Research Interest
+INSERT INTO RegularUser (  
+    Username, Name, Email_Id, DOB, Address, 
+    Permanent_Address, Gender, Contact_No 
+) VALUES (
+    $username, $name, $email, $DOB, $address, 
+    $permanentAddr, $gender, $contactNumber
+);
+
+INSERT INTO Faculty (
+    Username, Position
+) VALUES (
+    $username, $position
+);
+
+// For each research interest
+INSERT INTO Research_Interests (
+    Instructor_Id, Research_Interest
+) VALUES (
+    (SELECT Instructor_Id FROM Faculty WHERE Username=$username), 
+    $research_interest
+);
+
+
+// 2.b. Insert belongs department
+INSERT INTO Department_Faculty (
+    Dept_Id, Instructor_Id
+) VALUES (
+    $dept_id,
+    (SELECT Instructor_Id FROM Faculty WHERE Username=$username)
+);
+
+
+// 2.c. Insert teaches section
+INSERT INTO Faculty_Section (
+    Instructor_Id, CRN
+) VALUES (
+    (SELECT Instructor_Id FROM Faculty WHERE Username=$username),
+    $CRN
+);
+
+
+// 3. Update Faculty Profile
+// 3.a. Update Faculty Info and Research Interest
+UPDATE RegularUser
+SET Name=$name, 
+    Email_Id=$email, 
+    DOB=$DOB, 
+    Address=$address, 
+    Permanent_Address=$permanentAddr,
+    Gender=$gender,
+    Contact_No=$contactNumber
+WHERE Username=$username;
+
+UPDATE Faculty
+SET Position=$position
+WHERE Username=$username;
+
+// For each research interest
+DELETE FROM Research_Interests
+WHERE Instructor_Id=(SELECT Instructor_Id FROM Faculty WHERE Username=$username);
+
+INSERT INTO Research_Interests (
+    Instructor_Id, Research_Interest
+) VALUES (
+    (SELECT Instructor_Id FROM Faculty WHERE Username=$username), 
+    $research_interest
+);
+
+// 3.b. Update belongs department
+UPDATE Department_Faculty
+SET Dept_Id=$dept_id
+WHERE Instructor_Id=(SELECT Instructor_Id FROM Faculty WHERE Username=$username);
+
+// 3.c. Update teaches section
+UPDATE Faculty_Section
+SET CRN=$CRN
+WHERE Instructor_Id=(SELECT Instructor_Id FROM Faculty WHERE Username=$username);
+
+
+//------------
+// Course Selection
+//------------
+
+// 1. Populate Course Selection
+SELECT S.CRN, CS.Title, CC.Code, S.Letter, RU.Name, S.Day, S.Time, S.Location
+FROM
+    Department_Course AS DC
+    NATURAL JOIN Course_Section AS CS
+    NATURAL JOIN Course_Code AS CC
+    NATURAL JOIN Section AS S
+    NATURAL JOIN Faculty_Section AS FS
+    NATURAL JOIN Faculty AS F
+    NATURAL JOIN RegularUser AS RU
+WHERE Dept_Id=$deptId AND Term=$term;
+
+// 2. Select/Register for Course
+// for each Section selected by student user
+INSERT INTO Student_Section (
+    Student_Id, CRN, Grade_Mode
+) VALUES (
+    (SELECT Student_Id FROM Student WHERE Username=$username),
+    $crn,
+    $gradeMode
+);
+
+
+//------------
+// Registration Complete View
+//------------
+
+// Given the CRN from Registration page on Fig.8
+// assume that $CRN is an array of CRN
+SELECT Title, Code, Letter, Grade_Mode FROM (
+    SELECT Title, Code, CRN 
+    FROM Course_Code NATURAL JOIN Course_Section
+    WHERE CRN IN ($CRN)
+) AS COURSE_REG_INFO
+JOIN (
+    SELECT CRN, Letter, Grade_Mode 
+    FROM  Student_Section NATURAL JOIN Section
+    WHERE CRN IN ($CRN)
+) AS COURE_REG ON COURSE_REG_INFO.CRN=COURE_REG.CRN;
+
+
+//------------
+// Tutor Assignment
+//------------
+
+// Select Tutor Applicants
+// Prepoluted upon opening Fig.11
+// Student_Id will be stored as a hidden input in the Client 
+// as $student_Id since Name by itself may not be unique
+SELECT Name, Student_Id FROM RegularUser NATURAL JOIN Student
+WHERE Student_Id IN (
+    SELECT Student_Id FROM Tutor_Application 
+    WHERE Title=(
+        SELECT DISTINCT Title FROM Faculty_Section NATURAL JOIN Course_Section
+        WHERE Instructor_Id=(SELECT Instructor_Id FROM Faculty WHERE Username=$username)
+    )
+);
+
+// Assign Tutor
+// Given the Student_Id from Fig.11
+INSERT INTO Tutor (Student_Id) VALUES ($student_Id);
+INSERT INTO Tutor_Course (
+    Student_Id,
+    Title
+) VALUES (
+    $student_Id,
+    (SELECT DISTINCT Title FROM Faculty_Section NATURAL JOIN Course_Section
+        WHERE Instructor_Id=(
+            SELECT Instructor_Id FROM Faculty WHERE Username=$username)
+    )
+);
+
+
+//------------
+// Find Tutor
+//------------
+
+// 1. Find tutor by course code
+// When the user do search on course code
+SELECT Code, Title, RegularUser.Name, RegularUser.Email_Id 
+    FROM (
+        SELECT Course_Code.Title, Code, Student_ID
+            FROM Course_Code, Tutor_Course
+            WHERE Course_Code.Code LIKE '%$search_entry%'
+    ) AS MyTable
+    NATURAL JOIN Student
+    NATURAL JOIN RegularUser;
+
+// 2. Find tutor by keyword
+// When the user do search on keyword
+SELECT Code, Title, RegularUser.Name, RegularUser.Email_Id 
+    FROM (
+        SELECT Course_Code.Title, Code, Student_Id
+            FROM Course_Code, Tutor_Course
+            WHERE Course_Code.Title LIKE '%$search_entry%'
+    ) AS MyTable
+    NATURAL JOIN Student
+    NATURAL JOIN RegularUser;
+
+
+//------------
+// Tutor Logbook
+//------------
+
+// 1. Populate tutor name
+// Prepopulated upon opening Fig.15
+SELECT Name 
+    FROM RegularUser
+    WHERE Username=$username;
+
+// 2. Populate course code
+// Prepopulated upon opening Fig.15
+SELECT Code
+    FROM Tutor_Course NATURAL JOIN Course_Code
+    WHERE Student_Id=(SELECT Student_Id FROM Student WHERE Username=$username);
+
+// 3. Populate student name
+// Populated when student_Id is entered in Fig.15
+//When Student Id is entered, select the Student Name
+SELECT Name
+    FROM RegularUser NATURAL JOIN Student
+    WHERE Student_Id=$student_id;
+
+// 4. Create tutor logbook
+
+-- We don't have CRN of Student being tutored
+-- See Fig 15
+
+//Check if this tutor_id, student_id, crn combination exists in
+//the Tutor_Log table by the following:
+SELECT COUNT(*) FROM Tutor_Log
+WHERE 
+    Tutor_Id=(SELECT Student_Id AS tutor_Id FROM Student WHERE Username=$username) AND
+    Student_Id=$student_id AND
+    CRN=(SELECT CRN FROM Course_Code NATURAL JOIN Course_Section
+            NATURAL JOIN Student_Section
+            WHERE Code = $course_code AND Student_Id = $student_id);
+
+
+//If count equals zero, insert into Tutor_Log and Tutor_Log_DateTime
+-- See Fig 15
+
+INSERT INTO Tutor_Log (
+    Tutor_Id, Student_Id, CRN
+) VALUES (
+    (SELECT Student_Id AS tutor_Id FROM Student WHERE Username=$username), $student_id, 
+    (SELECT CRN FROM Course_Code NATURAL JOIN Course_Section
+                                 WHERE Code = $course_code));
+
+INSERT INTO Tutor_Log_DateTime (
+    Tutor_Id, Student_Id, CRN, `DateTime`
+) VALUES (
+    (SELECT Student_Id AS tutor_Id FROM STUDENT WHERE Username=$username),
+    $student_id, 
+    (SELECT CRN FROM Course_Code NATURAL JOIN Course_Section
+                WHERE Code = $course_code), 
+    NOW()
+);
+
+//Else the count is greater than zero, so just insert into Tutor_Log_DateTime
+
+INSERT INTO Tutor_Log_DateTime (
+    Tutor_Id, Student_Id, CRN, `DateTime`
+) VALUES (
+    (SELECT Student_Id AS tutor_Id FROM STUDENT WHERE Username=$username),
+    $student_id, 
+    (SELECT CRN FROM Course_Code NATURAL JOIN Course_Section
+                WHERE Code = $course_code), 
+    NOW()
+);
+
+
+//------------
+// Admin Report
+//------------
+
+SELECT Code, Title, Average_Grade
+FROM (
+    SELECT Code, Title, CRN
+    FROM Course_Code NATURAL JOIN Course NATURAL JOIN Course_Section
+) AS Course_CRNs
+NATURAL JOIN (
+    SELECT CRN, AVG(Grade) AS Average_Grade FROM (
+        SELECT CRN, Grade FROM (
+            SELECT CRN FROM Student_Section
+            WHERE CRN IN (SELECT CRN FROM Course_Section)
+            AND Grade='A'
+        ) AS GRADE_A JOIN (SELECT 4 AS Grade) AS GRADE_VAL_4
+        UNION
+        SELECT CRN, Grade FROM (
+            SELECT CRN FROM Student_Section
+            WHERE CRN IN (SELECT CRN FROM Course_Section)
+            AND Grade='B'
+        ) AS GRADE_B JOIN (SELECT 3 AS Grade) AS GRADE_VAL_3
+        UNION
+        SELECT CRN, Grade FROM (
+            SELECT CRN FROM Student_Section
+            WHERE CRN IN (SELECT CRN FROM Course_Section)
+            AND Grade='C'
+        ) AS GRADE_C JOIN (SELECT 2 AS Grade) AS GRADE_VAL_2
+        UNION
+        SELECT CRN, Grade FROM (
+            SELECT CRN FROM Student_Section
+            WHERE CRN IN (SELECT CRN FROM Course_Section)
+            AND Grade='D'
+        ) AS GRADE_D JOIN (SELECT 1 AS Grade) AS GRADE_VAL_1
+        UNION
+        SELECT CRN, Grade FROM (
+            SELECT CRN FROM Student_Section
+            WHERE CRN IN (SELECT CRN FROM Course_Section)
+            AND Grade='F'
+        ) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
+    ) AS GRADE_TOTAL GROUP BY CRN
+) AS GRADE_TOTAL;
+
+
+//------------
+// Faculty Report
+//------------
+
+// 1. # meetings > 3
+SELECT Code, Title, AVG(Grade) AS Average_Grade FROM (
+    SELECT Title, Code, CRN
+    FROM Course_Code NATURAL JOIN Course_Section
+) AS COURSE_REG 
+JOIN (
+    SELECT Student_Id, CRN FROM (
+        SELECT Student_Id, CRN, Count(`DateTime`) AS Num_Visits
+        FROM Tutor_Log_DateTime GROUP BY CRN, Student_Id
+    ) AS TUTOR_VISIT WHERE TUTOR_VISIT.Num_Visits > 3
+) AS TUTOR_MORE_THAN_3 ON COURSE_REG.CRN=TUTOR_MORE_THAN_3.CRN
+JOIN (
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='A'
+    ) AS GRADE_A JOIN (SELECT 4 AS Grade) AS GRADE_VAL_4
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='B'
+    ) AS GRADE_B JOIN (SELECT 3 AS Grade) AS GRADE_VAL_3
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='C'
+    ) AS GRADE_C JOIN (SELECT 2 AS Grade) AS GRADE_VAL_2
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='D'
+    ) AS GRADE_D JOIN (SELECT 1 AS Grade) AS GRADE_VAL_1
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='F'
+    ) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
+) AS STUDENT_GRADE 
+ON COURSE_REG.CRN=STUDENT_GRADE.CRN
+AND TUTOR_MORE_THAN_3.Student_Id=STUDENT_GRADE.Student_Id
+GROUP BY Code, Title;
+
+
+// 2. # meetings = 1 - 3
+SELECT Code, Title, AVG(Grade) AS Average_Grade FROM (
+    SELECT Title, Code, CRN
+    FROM Course_Code NATURAL JOIN Course_Section
+) AS COURSE_REG 
+JOIN (
+    SELECT Student_Id, CRN FROM (
+        SELECT Student_Id, CRN, Count(`DateTime`) AS Num_Visits
+        FROM Tutor_Log_DateTime GROUP BY CRN, Student_Id
+    ) AS TUTOR_VISIT WHERE TUTOR_VISIT.Num_Visits BETWEEN 1 AND 3
+) AS TUTOR_BETWEEN_1_3 ON COURSE_REG.CRN=TUTOR_BETWEEN_1_3.CRN
+JOIN (
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='A'
+    ) AS GRADE_A JOIN (SELECT 4 AS Grade) AS GRADE_VAL_4
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='B'
+    ) AS GRADE_B JOIN (SELECT 3 AS Grade) AS GRADE_VAL_3
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='C'
+    ) AS GRADE_C JOIN (SELECT 2 AS Grade) AS GRADE_VAL_2
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='D'
+    ) AS GRADE_D JOIN (SELECT 1 AS Grade) AS GRADE_VAL_1
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='F'
+    ) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
+) AS STUDENT_GRADE 
+ON COURSE_REG.CRN=STUDENT_GRADE.CRN
+AND TUTOR_BETWEEN_1_3.Student_Id=STUDENT_GRADE.Student_Id
+GROUP BY Code, Title;
+
+// 3. # meeting = 0
+SELECT Code, Title, AVG(Grade) AS Average_Grade FROM (
+    SELECT Title, Code, CRN
+    FROM Course_Code NATURAL JOIN Course_Section
+) AS COURSE_REG 
+JOIN (
+    SELECT SS.Student_Id, SS.CRN FROM Student_Section AS SS WHERE
+    NOT EXISTS (SELECT * FROM Tutor_Log AS TL 
+    WHERE TL.Student_Id=SS.Student_Id AND TL.CRN=SS.CRN)
+) AS TUTOR_BETWEEN_1_3 ON COURSE_REG.CRN=TUTOR_BETWEEN_1_3.CRN
+JOIN (
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='A'
+    ) AS GRADE_A JOIN (SELECT 4 AS Grade) AS GRADE_VAL_4
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='B'
+    ) AS GRADE_B JOIN (SELECT 3 AS Grade) AS GRADE_VAL_3
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='C'
+    ) AS GRADE_C JOIN (SELECT 2 AS Grade) AS GRADE_VAL_2
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='D'
+    ) AS GRADE_D JOIN (SELECT 1 AS Grade) AS GRADE_VAL_1
+    UNION
+    SELECT Student_Id, CRN, Grade FROM (
+        SELECT Student_Id, CRN FROM Student_Section
+        WHERE CRN IN (SELECT CRN FROM Course_Section)
+        AND Grade='F'
+    ) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
+) AS STUDENT_GRADE 
+ON COURSE_REG.CRN=STUDENT_GRADE.CRN
+AND TUTOR_BETWEEN_1_3.Student_Id=STUDENT_GRADE.Student_Id
+GROUP BY Code, Title;
+
+
+//------------
+// Student Report
+//------------
+
+SELECT Name, Code, Title, Average_Grade FROM (
+    SELECT Name, Instructor_Id, CRN
+    FROM RegularUser NATURAL JOIN Faculty NATURAL JOIN Faculty_Section 
+) AS FACULTY_INFO 
+JOIN (
+    SELECT Title, Code, CRN
+    FROM Course_Section NATURAL JOIN Course_Code
+) AS COURSE_CRN ON FACULTY_INFO.CRN=COURSE_CRN.CRN
+JOIN (
+    SELECT CRN, AVG(Grade) AS Average_Grade FROM (
+        SELECT CRN, Grade FROM (
+            SELECT CRN FROM Student_Section
+            WHERE CRN IN (SELECT CRN FROM Course_Section)
+            AND Grade='A'
+        ) AS GRADE_A JOIN (SELECT 4 AS Grade) AS GRADE_VAL_4
+        UNION
+        SELECT CRN, Grade FROM (
+            SELECT CRN FROM Student_Section
+            WHERE CRN IN (SELECT CRN FROM Course_Section)
+            AND Grade='B'
+        ) AS GRADE_B JOIN (SELECT 3 AS Grade) AS GRADE_VAL_3
+        UNION
+        SELECT CRN, Grade FROM (
+            SELECT CRN FROM Student_Section
+            WHERE CRN IN (SELECT CRN FROM Course_Section)
+            AND Grade='C'
+        ) AS GRADE_C JOIN (SELECT 2 AS Grade) AS GRADE_VAL_2
+        UNION
+        SELECT CRN, Grade FROM (
+            SELECT CRN FROM Student_Section
+            WHERE CRN IN (SELECT CRN FROM Course_Section)
+            AND Grade='D'
+        ) AS GRADE_D JOIN (SELECT 1 AS Grade) AS GRADE_VAL_1
+        UNION
+        SELECT CRN, Grade FROM (
+            SELECT CRN FROM Student_Section
+            WHERE CRN IN (SELECT CRN FROM Course_Section)
+            AND Grade='F'
+        ) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
+    ) AS GRADE_TOTAL GROUP BY CRN
+) AS COURSE_GRADE ON FACULTY_INFO.CRN=COURSE_GRADE.CRN;
