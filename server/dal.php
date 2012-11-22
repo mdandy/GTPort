@@ -74,13 +74,16 @@ class DAL
 	{
 		try 
 		{
-			$data = array($username, $password);
-			$sql = "INSERT INTO User (Username, Password) VALUES (?, ?)";
-			$sql .= " ON DUPLICATE KEY UPDATE Username=?, Password=?";
-			
+			$sql = "INSERT INTO User (Username, Password) VALUES (:username, :password)";
+			$sql .= " ON DUPLICATE KEY UPDATE Password=:uPassword";
+	
 			$query = self::$dbh->prepare($sql);
-			$isSuccessful = $query->execute(array_merge($data, $data));
-			return $isSuccessful;
+			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":password", $password, PDO::PARAM_STR, 64);
+			$query->bindParam(":uPassword", $password, PDO::PARAM_STR, 64);
+			$query->execute();
+			
+			return true;
 		}
 		catch(PDOException $e) 
 		{
@@ -164,8 +167,8 @@ class DAL
 			$sql .= ") VALUES (";
 			$sql .= ":username, :name, :email, :DOB, :address, :permanentAddr, :gender, :contactNumber";
 			$sql .= ") ON DUPLICATE KEY UPDATE";
-			$sql .= " Name=:name, Email_Id=:email, DOB=:DOB, Address=:address,";
-			$sql .= " Permanent_Address=:permanentAddr, Gender=:gender, Contact_No=:contactNumber";
+			$sql .= " Name=:uName, Email_Id=:uEmail, DOB=:uDOB, Address=:uAddress,";
+			$sql .= " Permanent_Address=:uPermanentAddr, Gender=:uGender, Contact_No=:uContactNumber";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
@@ -176,6 +179,13 @@ class DAL
 			$query->bindParam(":permanentAddr", $permanentAddr, PDO::PARAM_STR, 128);
 			$query->bindParam(":gender", $gender, PDO::PARAM_STR, 8);
 			$query->bindParam(":contactNumber", $contactNumber, PDO::PARAM_STR, 16);
+			$query->bindParam(":uName", $name, PDO::PARAM_STR, 64);
+			$query->bindParam(":uEmail", $email, PDO::PARAM_STR, 64);
+			$query->bindParam(":uDOB", $DOB);
+			$query->bindParam(":uAddress", $address, PDO::PARAM_STR, 128);
+			$query->bindParam(":uPermanentAddr", $permanentAddr, PDO::PARAM_STR, 128);
+			$query->bindParam(":uGender", $gender, PDO::PARAM_STR, 8);
+			$query->bindParam(":uContactNumber", $contactNumber, PDO::PARAM_STR, 16);
 			$query->execute();
 			
 			$sql = "INSERT INTO Student (Username, Major, Degree)";
@@ -208,7 +218,7 @@ class DAL
 			$sql .= " (SELECT Student_Id FROM Student WHERE Username=:username),";
 			$sql .= " :name_school, :year_grad, :major, :degree, :gpa)";
 			$sql .= " ON DUPLICATE KEY UPDATE";
-			$sql .= " Major=:major, Degree=:degree, GPA=:gpa";
+			$sql .= " Major=:uMajor, Degree=:uDegree, GPA=:uGpa";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
@@ -217,6 +227,9 @@ class DAL
 			$query->bindParam(":major", $major, PDO::PARAM_STR, 64);
 			$query->bindParam(":degree", $degree, PDO::PARAM_STR, 64);
 			$query->bindParam(":gpa", $gpa);
+			$query->bindParam(":uMajor", $major, PDO::PARAM_STR, 64);
+			$query->bindParam(":uDegree", $degree, PDO::PARAM_STR, 64);
+			$query->bindParam(":uGpa", $gpa);
 			return $query->execute();
 		}
 		catch(PDOException $e) 

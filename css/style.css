@@ -97,7 +97,8 @@ header button.logout
 	padding-bottom: 10px;
 }
 
-#login_alert
+#login_alert,
+#create_account_alert
 {
 	max-width: 500px;
 	margin: 0px auto 20px;

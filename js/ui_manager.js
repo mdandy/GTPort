@@ -60,7 +60,6 @@ var UIManager =
 		}
 		
 		$("#create_account").hide();
-		$("#login_alert").hide();
 	},
 	
 	show_create_account: function()

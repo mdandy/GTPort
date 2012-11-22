@@ -31,12 +31,82 @@ var AJAXManager =
 				if (data.length == 0)
 				{
 					sessionStorage.username = "";
-					$("#login_alert").show();
+					var template = "<div class='alert alert-error'>";
+					template += "<button type='button' class='close' data-dismiss='alert'>×</button>";
+					template += "<strong>Error!</strong> Invalid username and/ or password.</div>";
+					$("#create_account_alert").append(template);
 				}
 				else
 				{
 					sessionStorage.username = data[0].Username;
 					window.location.href = "index.html";
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+	},
+	
+	register: function()
+	{
+		var form = document.forms["create_account_form"];
+		var username = form.username.value;
+		var password = form.password.value;
+		var password2 = form.confirm_password.value;
+		var user_type = form.user_type.value;
+		
+		if (password !== password2)
+		{
+			var template = "<div class='alert alert-error'>";
+			template += "<button type='button' class='close' data-dismiss='alert'>×</button>";
+			template += "<strong>Error!</strong> Password does not match.</div>";
+			$("#create_account_alert").append(template);
+			return;
+		}
+		
+		if (username == "" || password == "")
+		{
+			var template = "<div class='alert alert-error'>";
+			template += "<button type='button' class='close' data-dismiss='alert'>×</button>";
+			template += "<strong>Error!</strong> Username and/ or password cannot be empty.</div>";
+			$("#create_account_alert").append(template);
+			return;
+		}
+	
+		$.ajaxSetup (
+		{
+			cache: false
+		});
+
+		var loadUrl = "server/login.php";
+		var query = { q : "register",
+					  username: username, 
+					  password: password };
+
+		$.ajax ({
+			type: "POST",
+			url: loadUrl,
+			data: query,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+				{
+					sessionStorage.username = username;
+					if (user_type == "faculty")
+						window.location.href = "index.html?register=faculty";
+					else
+						window.location.href = "index.html?register=student";
+				}
+				else
+				{
+					var template = "<div class='alert alert-error'>";
+					template += "<button type='button' class='close' data-dismiss='alert'>×</button>";
+					template += "<strong>Error!</strong> Unable to create account.</div>";
+					$("#create_account_alert").append(template);
 				}
 			},
 			error: function(jqXHR, textStatus, errorThrown) 
