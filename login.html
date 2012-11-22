@@ -20,17 +20,55 @@
 			<img src="img/logo.png" alt="GT Port" />
 		</div>
 		
-		<form id="login_form" onsubmit="return false;" class="form-signin">
+		<form id="login_form" onSubmit="return false;" class="form-signin">
 			<h2 class="form-signin-heading">Enter your GTPort Account and Password</h2>
 			<input type="text" class="input-block-level" placeholder="Username" id="username" name="username">
 			<input type="password" class="input-block-level" placeholder="Password" id="password" name="password">
-			<button class="btn btn-large btn-primary" type="submit" onclick="AJAXManager.login();">Sign in</button>
-			<button class="btn btn-large btn-primary">Create Account</button>
+			<button class="btn btn-large btn-primary" type="submit" onClick="AJAXManager.login();">Sign in</button>
+			<button class="btn btn-large btn-primary" onClick="UIManager.show_create_account();">Create Account</button>
 		</form>
 		
 		<div id="login_alert" class="alert alert-error">
   			<button type="button" class="close" data-dismiss="alert">×</button>
   			<strong>Error!</strong> Invalid username and/ or password.
+		</div>
+		
+		<div id="create_account">
+			<form id="create_account_form" onSubmit="return false;" class="form-signin form-horizontal">
+				<div class="control-group">
+					<label class="control-label">Username</label>
+					<div class="controls">
+						<input type="text" id="username" name="username">
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label">Password</label>
+					<div class="controls">
+						<input type="password" id="password" name="password">
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label">Confirm Password</label>
+					<div class="controls">
+						<input type="password" id="confirm_password" name="confirm_password">
+					</div>
+				</div>
+				
+				<div class="control-group">
+					<label class="control-label">Type of User</label>
+					<div class="controls">
+						<select id="user_type" name="user_type">
+							<option value="student">Student</option>
+							<option value="faculty">Faculty</option>
+						</select>
+					</div>
+				</div>
+				
+				<button class="btn btn-large btn-primary" onClick="UIManager.hide_create_account();">Cancel</button>
+				<button class="btn btn-large btn-primary" onClick="">Register!</button>
+			</form>
 		</div>
     </div>
 	

@@ -88,7 +88,6 @@ header button.logout
 {
 	font-size: 16px;
 	height: auto;
-	margin-bottom: 15px;
 	padding: 7px 9px;
 }
 
@@ -101,7 +100,7 @@ header button.logout
 #login_alert
 {
 	max-width: 500px;
-	margin: 0px auto;
+	margin: 0px auto 20px;
 }
 
 /**

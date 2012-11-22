@@ -28,7 +28,7 @@ var AJAXManager =
 			success: function(data) 
 			{
 				// Save in Web Storage
-				if (data == null)
+				if (data.length == 0)
 				{
 					sessionStorage.username = "";
 					$("#login_alert").show();

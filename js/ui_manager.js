@@ -59,7 +59,18 @@ var UIManager =
 			form.username.value = sessionStorage.username;
 		}
 		
+		$("#create_account").hide();
 		$("#login_alert").hide();
+	},
+	
+	show_create_account: function()
+	{
+		$("#create_account").show("slow");
+	},
+	
+	hide_create_account: function()
+	{
+		$("#create_account").hide("slow");
 	},
 	
 	init_main_page: function()
