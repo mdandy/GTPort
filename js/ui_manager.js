@@ -15,6 +15,17 @@ var UIManager =
 			$("#main").load("page/lorem_ipsum.html");
 	},
 	
+	load_sidebar: function(sidebar_name, callback)
+	{
+		if (sidebar_name !== undefined) 
+		{
+			if (callback === undefined)
+				$("#sidebar").load("page/" + sidebar_name);
+			else
+				$("#sidebar").load("page/" + sidebar_name, callback);
+		}
+	},
+	
 	select_page: function(element, page_name)
 	{
 		// Reset selection
@@ -34,6 +45,11 @@ var UIManager =
 			else
 				UIManager.load_page(page_name);
 		}
+	},
+	
+	get_URL_Parameter: function (name) 
+	{
+		return decodeURI((RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]);
 	},
 	
 	isAuthenticated: function()
@@ -76,6 +92,18 @@ var UIManager =
 	{
 		UIManager.isAuthenticated();
 		$("#active_user").html(sessionStorage.username);
+		
+		var register = UIManager.get_URL_Parameter("register");
+		if (register == "student")
+		{
+			UIManager.load_sidebar("sidebar_create_account.html");
+			UIManager.load_page("personal_info_student.html");
+		}
+		else if (register == "faculty")
+		{
+			UIManager.load_sidebar("sidebar_create_account.html");
+			UIManager.load_page("personal_info_faculty.html");
+		}
 	},
 	
 	init_personal_info_student: function()
