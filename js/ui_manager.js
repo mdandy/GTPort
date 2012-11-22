@@ -36,6 +36,38 @@ var UIManager =
 		}
 	},
 	
+	isAuthenticated: function()
+	{
+		if (!sessionStorage.username)
+			window.location.href = "login.html";
+			
+		if (sessionStorage.username == "")
+			window.location.href = "login.html";
+	},
+	
+	logout: function()
+	{
+		sessionStorage.username = "";
+		window.location.href = "login.html";
+	},
+	
+	init_login: function()
+	{
+		if (sessionStorage.username)
+		{
+			var form = document.forms["login_form"];
+			form.username.value = sessionStorage.username;
+		}
+		
+		$("#login_alert").hide();
+	},
+	
+	init_main_page: function()
+	{
+		UIManager.isAuthenticated();
+		$("#active_user").html(sessionStorage.username);
+	},
+	
 	init_personal_info_student: function()
 	{
 		$("#tutor_courses").pickList({

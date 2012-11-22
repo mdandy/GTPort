@@ -63,7 +63,7 @@ header button.logout
 {
 	max-width: 500px;
 	padding: 19px 29px 29px;
-	margin: 0 auto 20px;
+	margin: 0px auto 20px;
 	background-color: #fff;
 	border: 1px solid #e5e5e5;
 	
@@ -96,6 +96,12 @@ header button.logout
 {
 	font-size: 1em;
 	padding-bottom: 10px;
+}
+
+#login_alert
+{
+	max-width: 500px;
+	margin: 0px auto;
 }
 
 /**

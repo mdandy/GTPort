@@ -6,19 +6,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 {
 	$username = $_POST["username"];	
 	$password = $_POST["password"];	
-	echo (login ($username, $password));
+	
+	$ret = login ($username, $password);
+	echo ($ret);
 }
 
 function login($username, $password)
 {
 	DAL::connect();
-	$success = DAL::login($username, $password);
+	$user = DAL::login($username, $password);
 	DAL::disconnect();
-	
-	if ($success)
-		return "TRUE";
-	else
-		return "FALSE";
+	return $user[0]["Username"];
 }
 
 ?>

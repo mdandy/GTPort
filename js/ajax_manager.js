@@ -27,7 +27,17 @@ var AJAXManager =
 			timeout: 5000, //5 seconds
 			success: function(data) 
 			{
-				alert (data);
+				// Save in Web Storage
+				if (data == "")
+				{
+					sessionStorage.username = "";
+					$("#login_alert").show();
+				}
+				else
+				{
+					sessionStorage.username = data;
+					window.location.href = "index.html";
+				}
 			},
 			error: function(jqXHR, textStatus, errorThrown) 
 			{

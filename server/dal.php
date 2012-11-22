@@ -50,17 +50,21 @@ class DAL
 	 */
 	public static function login($username, $password)
 	{
-		$sql = "SELECT COUNT(*) FROM User WHERE username=:username AND password=:password";
-		
-		$query = self::$dbh->prepare($sql);
-		$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-		$query->bindParam(":password", $password, PDO::PARAM_STR, 64);
-		$query->execute();
-		
-		$count = $query->fetchColumn();
-		if ($count > 0)
-			return true;
-		return false;
+		try
+		{
+			$sql = "SELECT Username FROM User WHERE Username=:username AND Password=:password";
+			
+			$query = self::$dbh->prepare($sql);
+			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":password", $password, PDO::PARAM_STR, 64);
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
+		}
+		catch(PDOException $e) 
+		{
+			echo ("Error: " . $e->getMessage());
+		}
+		return NULL;
 	}
 	
 	/**

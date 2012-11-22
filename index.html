@@ -25,9 +25,9 @@
 					<p class="brand"><img src="img/logo.png" alt="GTPort" width="100px" /></p>
 					
 					<div class="nav-collapse collapse">
-						<button class="btn btn-info pull-right logout">Logout!</button>
+						<button class="btn btn-info pull-right logout" onclick="UIManager.logout();">Logout!</button>
 						<p class="navbar-text pull-right username">
-							Hi <a href="#" class="navbar-link">Username</a>
+							Hi <span class="navbar-link" id="active_user">Username</span>
 						</p>
 						
 		
@@ -63,7 +63,7 @@
 	
 	<script type="application/javascript">
 		$(document).ready(function() {
-			UIManager.load_page();
+			UIManager.init_main_page();
 		});
 	</script>
 </body>
