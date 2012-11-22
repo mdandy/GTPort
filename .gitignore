@@ -2,3 +2,9 @@
 server/dbconfig.php
 
 *.xml
+
+*.xml
+
+server/_notes/dwsync.xml
+
+*.xml

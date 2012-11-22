@@ -23,19 +23,19 @@ var AJAXManager =
 			type: "POST",
 			url: loadUrl,
 			data: query,
-			dataType: "text",
+			dataType: "json",
 			timeout: 5000, //5 seconds
 			success: function(data) 
 			{
 				// Save in Web Storage
-				if (data == "")
+				if (data == null)
 				{
 					sessionStorage.username = "";
 					$("#login_alert").show();
 				}
 				else
 				{
-					sessionStorage.username = data;
+					sessionStorage.username = data[0].Username;
 					window.location.href = "index.html";
 				}
 			},
