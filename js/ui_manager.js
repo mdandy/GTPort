@@ -110,29 +110,36 @@ var UIManager =
 		else
 		{
 			// Load regular main index
-			
-			// TODO: get type of student here
-			var type_of_account = "student";
-			if (type_of_account == "student")
-			{
-				UIManager.load_sidebar("sidebar_student.html");
-				UIManager.load_page("lorem_ipsum.html");
-			}
-			else if (type_of_account == "tutor")
-			{
-				UIManager.load_sidebar("sidebar_tutor.html");
-				UIManager.load_page("lorem_ipsum.html");
-			}
-			else if (type_of_account == "faculty")
-			{
-				UIManager.load_sidebar("sidebar_faculty.html");
-				UIManager.load_page("lorem_ipsum.html");
-			}
-			else if (type_of_account == "admin")
-			{
-				UIManager.load_sidebar("sidebar_admin.html");
-				UIManager.load_page("lorem_ipsum.html");
-			}
+			AJAXManager.get_account_type(UIManager.init_main_page_with_type);
+		}
+	},
+	
+	init_main_page_with_type: function (account_type)
+	{
+		if (account_type == "student")
+		{
+			UIManager.load_sidebar("sidebar_student.html");
+			UIManager.load_page("lorem_ipsum.html");
+		}
+		else if (account_type == "tutor")
+		{
+			UIManager.load_sidebar("sidebar_tutor.html");
+			UIManager.load_page("lorem_ipsum.html");
+		}
+		else if (account_type == "faculty")
+		{
+			UIManager.load_sidebar("sidebar_faculty.html");
+			UIManager.load_page("lorem_ipsum.html");
+		}
+		else if (account_type == "admin")
+		{
+			UIManager.load_sidebar("sidebar_admin.html");
+			UIManager.load_page("lorem_ipsum.html");
+		}
+		else
+		{
+			UIManager.load_sidebar("sidebar_error.html");
+			UIManager.load_page("lorem_ipsum.html");
 		}
 	},
 	

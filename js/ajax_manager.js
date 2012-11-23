@@ -116,6 +116,38 @@ var AJAXManager =
 		});
 	},
 	
+	get_account_type: function(callback)
+	{
+		if(sessionStorage.username)
+		{
+			var username = sessionStorage.username;
+			$.ajaxSetup (
+			{
+				cache: true
+			});
+	
+			var loadUrl = "server/login.php";
+			var query = { q : "account_type",
+						  username: username };
+	
+			$.ajax ({
+				type: "POST",
+				url: loadUrl,
+				data: query,
+				dataType: "json",
+				timeout: 5000, //5 seconds
+				success: function(data) 
+				{
+					callback(data.res);
+				},
+				error: function(jqXHR, textStatus, errorThrown) 
+				{
+					console.error(textStatus);
+				}
+			});
+		}
+	},
+	
 	update_student_profile: function(section)
 	{
 		if (section == "personal")

@@ -13,6 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 	{
 		if (strcmp($_POST["q"], "register") == 0)
 			$ret = register($username, $password);
+		else if (strcmp($_POST["q"], "account_type") == 0)
+			$ret = get_account_type($username);
 	}
 	else
 		$ret = login ($username, $password);
@@ -40,6 +42,14 @@ function register($username, $password)
 	if ($success)
 		return array("res" => "TRUE");
 	return array("res" => "FALSE");
+}
+
+function get_account_type($username)
+{
+	DAL::connect();
+	$type = DAL::get_account_type($username);
+	DAL::disconnect();
+	return array ("res" => $type);
 }
 
 ?>

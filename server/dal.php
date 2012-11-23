@@ -92,6 +92,58 @@ class DAL
 		return false;
 	}
 	
+	public static function get_account_type($username)
+	{
+		try
+		{		
+			$sql = "SELECT COUNT(*) FROM Student WHERE Username=:username";
+			$query = self::$dbh->prepare($sql);
+			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->execute();
+			$num = $query->fetchColumn();
+			$query->closeCursor();
+			
+			if ($num > 0)
+			{
+				$sql = "SELECT COUNT(*) FROM Tutor WHERE Student_Id=(SELECT Student_Id FROM Student WHERE Username=:username)";
+				$query = self::$dbh->prepare($sql);
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->execute();
+				$num = $query->fetchColumn();
+				$query->closeCursor();
+				
+				if($num > 0)
+					return "tutor";
+				else
+					return "student";
+			}
+			
+			$sql = "SELECT COUNT(*) FROM Faculty WHERE Username=:username";
+			$query = self::$dbh->prepare($sql);
+			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->execute();
+			$num = $query->fetchColumn();
+			$query->closeCursor();
+			
+			if($num > 0)
+				return "faculty";
+			
+			$sql = "SELECT COUNT(*) FROM Administrator WHERE Username=:username";
+			$query = self::$dbh->prepare($sql);
+			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->execute();
+			if($query->fetchColumn() > 0)
+				return "admin";
+				
+			return "unknown";
+		}
+		catch(PDOException $e) 
+		{
+			echo ("Error: " . $e->getMessage());
+		}
+		return NULL;
+	}
+	
 	/**
 	 * Student Profile
 	 */
