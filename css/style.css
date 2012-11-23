@@ -50,6 +50,11 @@ textarea
 /**
  * HEADER
  */
+header .brand
+{
+	cursor: pointer;	
+}
+ 
 header p.username
 {
 	margin-top: 12px;

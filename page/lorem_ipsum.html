@@ -3,3 +3,28 @@
 <p>
 	<img src="img/logo.png" alt="GTPort" />
 </p>
+
+<p>
+	Select page to load: 
+	<select onchange="load_debug();" id="debug" name="debug">
+		<option value="lorem_ipsum.html">lorem_ipsum.html</option>
+		<option value="personal_info_student.html">personal_info_student.html</option>
+		<option value="add_course.html">add_course.html</option>
+		<option value="find_tutors.html">find_tutors.html</option>
+		<option value="tutor_logbook.html">tutor_logbook.html</option>
+		<option value="report_student.html">report_student.html</option>
+		<option value="personal_info_faculty.html">personal_info_faculty.html</option>
+		<option value="assign_grade.html">assign_grade.html</option>
+		<option value="assign_tutor.html">assign_tutor.html</option>
+		<option value="report_faculty.html">report_faculty.html</option>
+		<option value="report_admin.html">report_admin.html</option>
+	</select>
+	
+	<script type="application/javascript">
+		function load_debug()
+		{
+			var page = $("#debug").val();
+			UIManager.select_page(null, page);
+		}
+	</script>
+</p>

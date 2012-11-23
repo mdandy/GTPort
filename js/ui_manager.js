@@ -28,14 +28,17 @@ var UIManager =
 	
 	select_page: function(element, page_name)
 	{
-		// Reset selection
-		$("#sidebar_nav li").each(function(index) 
+		if (element != null)
 		{
-			$(this).removeClass("active");
-		});
-		
-		// Select this element
-		$(element).parent().addClass("active");
+			// Reset selection
+			$("#sidebar_nav li").each(function(index) 
+			{
+				$(this).removeClass("active");
+			});
+			
+			// Select this element
+			$(element).parent().addClass("active");
+		}
 		
 		// Load the page
 		if (page_name !== undefined)
