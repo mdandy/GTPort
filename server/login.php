@@ -27,7 +27,10 @@ function login($username, $password)
 	DAL::connect();
 	$user = DAL::login($username, $password);
 	DAL::disconnect();
-	return $user;
+	
+	if ($user != NULL)
+		return array ("res" => "TRUE", "data" => $user[0]);
+	return array ("res" => "FALSE");
 }
 
 function register($username, $password)
@@ -49,7 +52,10 @@ function get_account_type($username)
 	DAL::connect();
 	$type = DAL::get_account_type($username);
 	DAL::disconnect();
-	return array ("res" => $type);
+	
+	if ($type != NULL)
+		return array ("res" => "TRUE", "data" => $type);
+	return array ("res" => "FALSE");
 }
 
 ?>

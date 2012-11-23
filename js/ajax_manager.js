@@ -28,18 +28,18 @@ var AJAXManager =
 			success: function(data) 
 			{
 				// Save in Web Storage
-				if (data.length == 0)
+				if (data.res == "TRUE")
+				{
+					sessionStorage.username = data.data.Username;
+					window.location.href = "index.html";
+				}
+				else
 				{
 					sessionStorage.username = "";
 					var template = "<div class='alert alert-error'>";
 					template += "<button type='button' class='close' data-dismiss='alert'>×</button>";
 					template += "<strong>Error!</strong> Invalid username and/ or password.</div>";
 					$("#create_account_alert").append(template);
-				}
-				else
-				{
-					sessionStorage.username = data[0].Username;
-					window.location.href = "index.html";
 				}
 			},
 			error: function(jqXHR, textStatus, errorThrown) 
@@ -138,7 +138,8 @@ var AJAXManager =
 				timeout: 5000, //5 seconds
 				success: function(data) 
 				{
-					callback(data.res);
+					if (data.res == "TRUE")
+						callback(data.data);
 				},
 				error: function(jqXHR, textStatus, errorThrown) 
 				{
