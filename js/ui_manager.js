@@ -104,6 +104,33 @@ var UIManager =
 			UIManager.load_sidebar("sidebar_create_account.html");
 			UIManager.load_page("personal_info_faculty.html");
 		}
+		else
+		{
+			// Load regular main index
+			
+			// TODO: get type of student here
+			var type_of_account = "faculty";
+			if (type_of_account == "student")
+			{
+				UIManager.load_sidebar("sidebar_student.html");
+				UIManager.load_page("lorem_ipsum.html");
+			}
+			else if (type_of_account == "tutor")
+			{
+				UIManager.load_sidebar("sidebar_tutor.html");
+				UIManager.load_page("lorem_ipsum.html");
+			}
+			else if (type_of_account == "faculty")
+			{
+				UIManager.load_sidebar("sidebar_faculty.html");
+				UIManager.load_page("lorem_ipsum.html");
+			}
+			else if (type_of_account == "admin")
+			{
+				UIManager.load_sidebar("sidebar_admin.html");
+				UIManager.load_page("lorem_ipsum.html");
+			}
+		}
 	},
 	
 	init_personal_info_student: function()

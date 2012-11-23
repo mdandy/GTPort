@@ -32,6 +32,12 @@ textarea
 	margin-left: 320px;
 }
 
+.center
+{
+	text-align: center;
+	margin-bottom: 40px;
+}
+
 /**
  * BANNER
  */

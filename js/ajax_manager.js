@@ -114,5 +114,25 @@ var AJAXManager =
 				console.error(textStatus);
 			}
 		});
+	},
+	
+	update_student_profile: function(section)
+	{
+		if (section == "personal")
+		{
+			
+		}
+		else if (section == "tutor")
+		{
+			
+		}
+		else if (section == "education")
+		{
+			
+		}
+		
+		var register = UIManager.get_URL_Parameter("register");
+		if (register.length != 0)
+				window.location.href = "index.html";
 	}
 };
