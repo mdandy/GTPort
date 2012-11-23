@@ -109,7 +109,7 @@ var UIManager =
 			// Load regular main index
 			
 			// TODO: get type of student here
-			var type_of_account = "faculty";
+			var type_of_account = "student";
 			if (type_of_account == "student")
 			{
 				UIManager.load_sidebar("sidebar_student.html");
