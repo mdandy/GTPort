@@ -52,11 +52,11 @@ class DAL
 	{
 		try
 		{
-			$sql = "SELECT Username FROM User WHERE Username=:username AND Password=:password";
+			$sql = "SELECT Username FROM User WHERE Username=:username AND Password=SHA1(:password)";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->bindParam(":password", $password, PDO::PARAM_STR, 64);
+			$query->bindParam(":password", $password, PDO::PARAM_STR, 128);
 			$query->execute();
 			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
@@ -74,13 +74,13 @@ class DAL
 	{
 		try 
 		{
-			$sql = "INSERT INTO User (Username, Password) VALUES (:username, :password)";
-			$sql .= " ON DUPLICATE KEY UPDATE Password=:uPassword";
+			$sql = "INSERT INTO User (Username, Password) VALUES (:username, SHA1(:password))";
+			$sql .= " ON DUPLICATE KEY UPDATE Password=SHA1(:uPassword)";
 	
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->bindParam(":password", $password, PDO::PARAM_STR, 64);
-			$query->bindParam(":uPassword", $password, PDO::PARAM_STR, 64);
+			$query->bindParam(":password", $password, PDO::PARAM_STR, 128);
+			$query->bindParam(":uPassword", $password, PDO::PARAM_STR, 128);
 			$query->execute();
 			
 			return true;
