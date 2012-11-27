@@ -1,0 +1,46 @@
+<h1>Course Selection</h1>
+
+<table cellpadding="5">
+	<tr>
+		<td>Term: </td>
+		<td>Spring 2013</td>
+	</tr>
+	<tr>
+		<td>Department: </td>
+		<td><span id="department">Computer Science</span></td>
+	</tr>
+</table>
+
+<form id="course_selection_2_form" onsubmit="return false;" class="form-horizontal">
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>CRN</th>
+				<th>Title</th>
+				<th>Course Code</th>
+				<th>Section</th>
+				<th>Mode of Grading</th>
+			</tr>
+		</thead>
+		<tbody id="registration">
+			<tr>
+				<td>88767</td>
+				<td>Introduction to DB</td>
+				<td>CS 4400</td>
+				<td>
+					<select id="grading_mode" name="grading_mode">
+						<option value="registered">Registered</option>
+						<option value="audit">Audit</option>
+						<option value="pass_fail">Pass/Fail</option>
+					</select>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<p class="center">
+		<button class="btn btn-primary" onclick="">Prev</button>
+		<button class="btn btn-primary" onclick="">Register</button>
+	</p>
+	<div id="course_selection_2_alert"></div>
+</form>

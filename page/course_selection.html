@@ -1,0 +1,49 @@
+<h1>Course Selection</h1>
+
+<table cellpadding="5">
+	<tr>
+		<td>Term: </td>
+		<td>Spring 2013</td>
+	</tr>
+	<tr>
+		<td>Department: </td>
+		<td><span id="department">Computer Science</span></td>
+	</tr>
+</table>
+
+<form id="course_selection_form" onsubmit="return false;" class="form-horizontal">
+	<table class="table table-bordered">
+		<thead>
+			<tr>
+				<th>Select</th>
+				<th>CRN</th>
+				<th>Title</th>
+				<th>Course Code</th>
+				<th>Section</th>
+				<th>Instructor</th>
+				<th>Days</th>
+				<th>Time</th>
+				<th>Location</th>
+			</tr>
+		</thead>
+		<tbody id="registration">
+			<tr>
+				<td><input id="registered" name="registered" type="checkbox"></td>
+				<td>88767</td>
+				<td>Introduction to DB</td>
+				<td>CS 4400</td>
+				<td>A</td>
+				<td>Navathe S.</td>
+				<td>MWF</td>
+				<td>12:00pm - 1:00pm</td>
+				<td>KACB 2443</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<p class="center">
+		<button class="btn btn-primary" onclick="">Back</button>
+		<button class="btn btn-primary" onclick="">Next</button>
+	</p>
+	<div id="course_selection_alert"></div>
+</form>
