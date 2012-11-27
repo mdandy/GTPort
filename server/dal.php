@@ -253,7 +253,7 @@ class DAL
 		catch(PDOException $e) 
 		{
 			echo ("Error: " . $e->getMessage());
-		}
+        }
 		return false;
 	}
 	
@@ -318,7 +318,32 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Name, Email_Id, DOB, Address, Permanent_Address, Gender, 
+                        Contact_No, Position, Research_Interest, Dept_Name, Letter, Course
+                    FROM (
+                        SELECT Name, Email_Id, DOB, Address, Permanent_Address, Gender, 
+                            Contact_No, Position, Instructor_Id
+                        FROM RegularUser AS R NATURAL JOIN Faculty AS F
+                        WHERE R.Username=:username
+                    ) AS FACULTY_INFO 
+                    JOIN (
+                        SELECT Research_Interest, Name AS Dept_Name, Instructor_Id
+                        FROM Research_Interests 
+                        NATURAL JOIN Department_Faculty 
+                        NATURAL JOIN Department
+                    ) AS FACULTY_EXTRA ON FACULTY_INFO.Instructor_Id=FACULTY_EXTRA.Instructor_Id  
+                    JOIN (
+                        SELECT Letter, Instructor_Id, CRN
+                        FROM Faculty_Section NATURAL JOIN Section
+                    ) AS FACULTY_SECTION ON FACULTY_INFO.Instructor_Id=FACULTY_SON DUPLICATE KEY UPDATEECTION.Instructor_Id
+                    JOIN (
+                        SELECT CRN, Title
+                        FROM Course_Section
+                    ) AS COURSE_TITLE ON FACULTY_SECTION.CRN=COURSE_TITLE.CRN
+                    JOIN (
+                        SELECT Title, Code AS Course
+                        FROM Course_Code
+                    ) AS COURSE_CODE ON COURSE_TITLE.Title=COURSE_CODE.Title;";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
@@ -335,10 +360,9 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Dept_Id, Name FROM Department;";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -352,10 +376,11 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Title, Code FROM Course_Code NATURAL JOIN Department_Course
+                    WHERE Dept_Id=:dept_Id;";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":dept_Id", $dept_Id, PDO::PARAM_INT);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -369,10 +394,11 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT CRN, Letter FROM Section NATURAL JOIN Course_Section
+                    WHERE Title=:course_title;";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":course_title", $course_title, PDO::PARAM_STR, 64);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -388,15 +414,94 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "INSERT INTO RegularUser (  
+                        Username,
+                        Name,
+                        Email_Id,
+                        DOB,
+                        Address, 
+                        Permanent_Address,
+                        Gender,
+                        Contact_No 
+                    ) VALUES (
+                        :username,
+                        :name,
+                        :email,
+                        :DOB,
+                        :address, 
+                        :permanentAddr,
+                        :gender,
+                        :contactNumber
+                    )
+                    ON DUPLICATE KEY 
+                    UPDATE
+                    SET
+                        Name = :name,
+                        Email_Id = :email,
+                        DOB = :DOB,
+                        Address = :address, 
+                        Permanent_Address = :permanentAddr,
+                        Gender = :gender,
+                        Contact_No = :contactNumber
+                    WHERE Username = :username;";
+                                            
+			$query = self::$dbh->prepare($sql);
+			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":name", $name, PDO::PARAM_STR, 64);
+			$query->bindParam(":email", $email, PDO::PARAM_STR, 64);
+			$query->bindParam(":DOB", $DOB);
+			$query->bindParam(":address", $address, PDO::PARAM_STR, 128);
+			$query->bindParam(":permanentAddr", $permanentAddr, PDO::PARAM_STR, 128);
+			$query->bindParam(":gender", $gender, PDO::PARAM_STR, 8);
+			$query->bindParam(":contactNumber", $contactNumber, PDO::PARAM_STR, 16);
+			$query->execute();
+            
+            $sql = "INSERT INTO Faculty (
+                        Username,
+                        Position
+                    ) VALUES (
+                        :username,
+                        :position
+                    )
+                    ON DUPLICATE KEY
+                    UPDATE
+                    SET
+                        Position = :position
+                    WHERE Username = :username;";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":position", $position, PDO::PARAM_STR, 64);
+			$query->execute();
+         
+        }
+		catch(PDOException $e) 
+		{
+			echo ("Error: " . $e->getMessage());
+		}
+         
+        try{   
+            $sql = "INSERT INTO Research_Interests (
+                        Instructor_Id,
+                        Research_Interest
+                    ) VALUES (
+                        (SELECT Instructor_Id 
+                         FROM Faculty 
+                         WHERE Username=:username), 
+                        :research_interest
+                    );";
+			
+			$query = self::$dbh->prepare($sql);
+			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":research_interest", $research_interest, PDO::PARAM_STR, 64);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			//If insert into research fails due to duplicate key, that 
+            //is ok because the entry is already there.  Do not show
+            //error msg.
+            //Todo: implement a log file to log this error.
 		}
 		return false;
 	}
@@ -405,10 +510,25 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "INSERT INTO Department_Faculty (
+                        Dept_Id, 
+                        Instructor_Id
+                    ) VALUES (
+                        :dept_id,
+                        (SELECT Instructor_Id FROM Faculty WHERE Username=:username)
+                    )
+                    ON DUPLICATE KEY
+                    UPDATE Department_Faculty
+                        SET 
+                            Dept_Id = :dept_id
+                        WHERE 
+                            Instructor_Id = 
+                                (SELECT Instructor_Id FROM Faculty WHERE Username=:username);
+                        ;";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":dept_id", $dept_id);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -422,10 +542,24 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "INSERT INTO Faculty_Section (
+                        Instructor_Id, 
+                        CRN
+                    ) VALUES (
+                        (SELECT Instructor_Id FROM Faculty WHERE Username=:username),
+                        :CRN
+                    )
+                    ON DUPLICATE KEY
+                    UPDATE
+                    SET
+                        CRN = :CRN
+                    WHERE 
+                        Instructor_Id = 
+                            (SELECT Instructor_Id FROM Faculty WHERE Username=:username);";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":CRN", $CRN, PDO::PARAM_STR, 8);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -442,10 +576,22 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT S.CRN, CS.Title, CC.Code, S.Letter, RU.Name, S.Day, S.Time, S.Location
+                    FROM
+                        Department_Course AS DC
+                        NATURAL JOIN Course_Section AS CS
+                        NATURAL JOIN Course_Code AS CC
+                        NATURAL JOIN Section AS S
+                        NATURAL JOIN Faculty_Section AS FS
+                        NATURAL JOIN Faculty AS F
+                        NATURAL JOIN RegularUser AS RU
+                    WHERE 
+                        Dept_Id = :deptId AND 
+                        Term = :term;";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":deptId", $deptId);
+			$query->bindParam(":term", $term, PDO::PARAM_STR, 16);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -459,10 +605,18 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "INSERT INTO Student_Section (
+                        Student_Id, CRN, Grade_Mode
+                    ) VALUES (
+                        (SELECT Student_Id FROM Student WHERE Username=$username),
+                        :crn,
+                        :gradeMode
+                    );";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":crn", $crn, PDO::PARAM_STR, 8);
+			$query->bindParam(":gradeMode", $gradeMode, PDO::PARAM_STR, 16);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -479,10 +633,22 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Title, Code, Letter, Grade_Mode 
+                    FROM (
+                        SELECT Title, Code, CRN 
+                        FROM Course_Code NATURAL J
+                        OIN Course_Section
+                        WHERE CRN 
+                        IN (:CRN)
+                    ) AS COURSE_REG_INFO
+                    JOIN (
+                        SELECT CRN, Letter, Grade_Mode 
+                        FROM  Student_Section NATURAL JOIN Section
+                        WHERE CRN IN (:CRN)
+                    ) AS COURE_REG ON COURSE_REG_INFO.CRN=COURE_REG.CRN;";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":CRN", implode(", ". $CRN));
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -499,7 +665,15 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Name, Student_Id FROM RegularUser NATURAL JOIN Student
+                    WHERE Student_Id 
+                    IN (
+                        SELECT Student_Id FROM Tutor_Application 
+                        WHERE Title=(
+                            SELECT DISTINCT Title FROM Faculty_Section NATURAL JOIN Course_Section
+                            WHERE Instructor_Id=(SELECT Instructor_Id FROM Faculty WHERE Username=:username)
+                        )
+                    );";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
@@ -516,10 +690,21 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "INSERT INTO Tutor (Student_Id) VALUES (:student_Id);
+                    INSERT INTO Tutor_Course (
+                        Student_Id,
+                        Title
+                    ) VALUES (
+                        :student_Id,
+                        (SELECT DISTINCT Title FROM Faculty_Section NATURAL JOIN Course_Section
+                            WHERE Instructor_Id=(
+                                SELECT Instructor_Id FROM Faculty WHERE Username=:username)
+                        )
+                    );";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":student_Id", $student_Id);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -536,10 +721,17 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Code, Title, RegularUser.Name, RegularUser.Email_Id 
+                    FROM (
+                        SELECT Course_Code.Title, Code, Student_ID
+                            FROM Course_Code, Tutor_Course
+                            WHERE Course_Code.Code LIKE '%:search_entry%'
+                    ) AS MyTable
+                    NATURAL JOIN Student
+                    NATURAL JOIN RegularUser;";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":search_entry", $search_entry);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -553,10 +745,17 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Code, Title, RegularUser.Name, RegularUser.Email_Id 
+                    FROM (
+                        SELECT Course_Code.Title, Code, Student_Id
+                            FROM Course_Code, Tutor_Course
+                            WHERE Course_Code.Title LIKE '%:search_entry%'
+                    ) AS MyTable
+                    NATURAL JOIN Student
+                    NATURAL JOIN RegularUser;";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":search_entry", $search_entry);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -573,7 +772,9 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Name 
+                    FROM RegularUser
+                    WHERE Username=:username;";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
@@ -590,7 +791,11 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Code
+                    FROM Tutor_Course NATURAL 
+                    JOIN Course_Code
+                    WHERE Student_Id = 
+                        (SELECT Student_Id FROM Student WHERE Username=:username);";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
@@ -603,14 +808,17 @@ class DAL
 		return false;
 	}
 	
-	public static function get_tutor_student_name($username)
+	public static function get_tutor_student_name($student_id)
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Name
+                    FROM RegularUser 
+                    NATURAL JOIN Student
+                    WHERE Student_Id=:student_id;";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":student_id", $student_id);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -624,10 +832,41 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "INSERT INTO Tutor_Log (
+                        Tutor_Id, Student_Id, CRN
+                    ) VALUES (
+                        (SELECT Student_Id AS tutor_Id FROM Student WHERE Username=:username), 
+                        :student_id, 
+                        (SELECT CRN FROM Course_Code NATURAL JOIN Course_Section
+                                                     WHERE Code = :course_code));";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+			$query->bindParam(":student_id", $student_id);
+			$query->bindParam(":course_code", $course_code, PDO::PARAM_STR, 64);
+			$query->execute();
+		}
+        catch(PDOException $e) 
+		{
+			//do nothing because this is mostly likely bcause entry
+            //already exists in the tutor_log
+		}
+		try
+		{
+			$sql = "INSERT INTO Tutor_Log_DateTime (
+                        Tutor_Id, Student_Id, CRN, `DateTime`
+                    ) VALUES (
+                        (SELECT Student_Id AS tutor_Id FROM STUDENT WHERE Username=:username),
+                        :student_id, 
+                        (SELECT CRN FROM Course_Code NATURAL JOIN Course_Section
+                                    WHERE Code = :course_code), 
+                        NOW()
+                    );";
+			
+			$query = self::$dbh->prepare($sql);
+			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+            $query->bindParam(":student_id", $student_id);
+			$query->bindParam(":course_code", $course_code, PDO::PARAM_STR, 64);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -664,10 +903,46 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Code, Title, Average_Grade
+                    FROM (
+                        SELECT Code, Title, CRN
+                        FROM Course_Code NATURAL JOIN Course NATURAL JOIN Course_Section
+                    ) AS Course_CRNs
+                    NATURAL JOIN (
+                        SELECT CRN, AVG(Grade) AS Average_Grade FROM (
+                            SELECT CRN, Grade FROM (
+                                SELECT CRN FROM Student_Section
+                                WHERE CRN IN (SELECT CRN FROM Course_Section)
+                                AND Grade='A'
+                            ) AS GRADE_A JOIN (SELECT 4 AS Grade) AS GRADE_VAL_4
+                            UNION
+                            SELECT CRN, Grade FROM (
+                                SELECT CRN FROM Student_Section
+                                WHERE CRN IN (SELECT CRN FROM Course_Section)
+                                AND Grade='B'
+                            ) AS GRADE_B JOIN (SELECT 3 AS Grade) AS GRADE_VAL_3
+                            UNION
+                            SELECT CRN, Grade FROM (
+                                SELECT CRN FROM Student_Section
+                                WHERE CRN IN (SELECT CRN FROM Course_Section)
+                                AND Grade='C'
+                            ) AS GRADE_C JOIN (SELECT 2 AS Grade) AS GRADE_VAL_2
+                            UNION
+                            SELECT CRN, Grade FROM (
+                                SELECT CRN FROM Student_Section
+                                WHERE CRN IN (SELECT CRN FROM Course_Section)
+                                AND Grade='D'
+                            ) AS GRADE_D JOIN (SELECT 1 AS Grade) AS GRADE_VAL_1
+                            UNION
+                            SELECT CRN, Grade FROM (
+                                SELECT CRN FROM Student_Section
+                                WHERE CRN IN (SELECT CRN FROM Course_Section)
+                                AND Grade='F'
+                            ) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
+                        ) AS GRADE_TOTAL GROUP BY CRN
+                    ) AS GRADE_TOTAL;";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -684,10 +959,49 @@ class DAL
 	{
 		try
 		{
-			$sql = "";
+			$sql = "SELECT Name, Code, Title, Average_Grade FROM (
+                        SELECT Name, Instructor_Id, CRN
+                        FROM RegularUser NATURAL JOIN Faculty NATURAL JOIN Faculty_Section 
+                    ) AS FACULTY_INFO 
+                    JOIN (
+                        SELECT Title, Code, CRN
+                        FROM Course_Section NATURAL JOIN Course_Code
+                    ) AS COURSE_CRN ON FACULTY_INFO.CRN=COURSE_CRN.CRN
+                    JOIN (
+                        SELECT CRN, AVG(Grade) AS Average_Grade FROM (
+                            SELECT CRN, Grade FROM (
+                                SELECT CRN FROM Student_Section
+                                WHERE CRN IN (SELECT CRN FROM Course_Section)
+                                AND Grade='A'
+                            ) AS GRADE_A JOIN (SELECT 4 AS Grade) AS GRADE_VAL_4
+                            UNION
+                            SELECT CRN, Grade FROM (
+                                SELECT CRN FROM Student_Section
+                                WHERE CRN IN (SELECT CRN FROM Course_Section)
+                                AND Grade='B'
+                            ) AS GRADE_B JOIN (SELECT 3 AS Grade) AS GRADE_VAL_3
+                            UNION
+                            SELECT CRN, Grade FROM (
+                                SELECT CRN FROM Student_Section
+                                WHERE CRN IN (SELECT CRN FROM Course_Section)
+                                AND Grade='C'
+                            ) AS GRADE_C JOIN (SELECT 2 AS Grade) AS GRADE_VAL_2
+                            UNION
+                            SELECT CRN, Grade FROM (
+                                SELECT CRN FROM Student_Section
+                                WHERE CRN IN (SELECT CRN FROM Course_Section)
+                                AND Grade='D'
+                            ) AS GRADE_D JOIN (SELECT 1 AS Grade) AS GRADE_VAL_1
+                            UNION
+                            SELECT CRN, Grade FROM (
+                                SELECT CRN FROM Student_Section
+                                WHERE CRN IN (SELECT CRN FROM Course_Section)
+                                AND Grade='F'
+                            ) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
+                        ) AS GRADE_TOTAL GROUP BY CRN
+                    ) AS COURSE_GRADE ON FACULTY_INFO.CRN=COURSE_GRADE.CRN;";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
