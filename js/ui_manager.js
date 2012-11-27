@@ -43,8 +43,33 @@ var UIManager =
 		// Load the page
 		if (page_name !== undefined)
 		{
+			// Special care
 			if (page_name === "personal_info_student.html")
 				UIManager.load_page(page_name, UIManager.init_personal_info_student);
+			else if (page_name === "personal_info_faculty.html")
+				UIManager.load_page(page_name, UIManager.init_personal_info_faculty);
+			else if (page_name === "add_course.html")
+				UIManager.load_page(page_name, UIManager.init_add_course);
+			else if (page_name === "select_department.html")
+				UIManager.load_page(page_name, UIManager.init_select_department);
+			else if (page_name === "course_selection.html")
+				UIManager.load_page(page_name, UIManager.init_course_selection);
+			else if (page_name === "course_selection2.html")
+				UIManager.load_page(page_name, UIManager.init_course_selection2);
+			else if (page_name === "assign_tutor.html")
+				UIManager.load_page(page_name, UIManager.init_assign_tutor);
+			else if (page_name === "assign_grade.html")
+				UIManager.load_page(page_name, UIManager.init_assign_grade);
+			else if (page_name === "find_tutors.html")
+				UIManager.load_page(page_name, UIManager.init_find_tutors);
+			else if (page_name === "tutor_logbook.html")
+				UIManager.load_page(page_name, UIManager.init_tutor_logbook);
+			else if (page_name === "report_admin.html")
+				UIManager.load_page(page_name, UIManager.init_report_admin);
+			else if (page_name === "report_faculty.html")
+				UIManager.load_page(page_name, UIManager.init_report_faculty);
+			else if (page_name === "report_student.html")
+				UIManager.load_page(page_name, UIManager.init_report_student);
 			else
 				UIManager.load_page(page_name);
 		}
@@ -147,7 +172,70 @@ var UIManager =
 	{
 		$("#tutor_courses").pickList({
 			sourceListLabel:    "Eligilble",
-        	targetListLabel:    "Applied",	
+        	targetListLabel:    "Applied"
 		});
+	},
+	
+	init_personal_info_faculty: function()
+	{
+		
+	},
+	
+	init_add_course: function()
+	{
+		
+	},
+	
+	init_select_department: function()
+	{
+		
+	},
+	
+	init_course_selection: function()
+	{
+		
+	},
+	
+	init_course_selection2: function()
+	{
+		
+	},
+	
+	init_assign_tutor: function()
+	{
+		$("#tutor_applicants").pickList({
+			sourceListLabel:    "Applied",
+        	targetListLabel:    "Approved"
+		});
+	},
+	
+	init_assign_grade: function()
+	{
+		
+	},
+	
+	init_find_tutors: function()
+	{
+		
+	},
+	
+	init_tutor_logbook: function()
+	{
+		
+	},
+	
+	init_report_admin: function()
+	{
+		
+	},
+	
+	init_report_faculty: function()
+	{
+		
+	},
+	
+	init_report_student: function()
+	{
+		
 	}
 }
