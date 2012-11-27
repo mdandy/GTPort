@@ -66,15 +66,14 @@ var AJAXManager =
 		});
 	},
 	
-	get_account_type: function(success, error)
+	get_account_type: function(query, success, error)
 	{	
 		$.ajaxSetup (
 		{
 			cache: true
 		});
 
-		var username = sessionStorage.username;
-		var loadUrl = "server/login.php?username=" + username;
+		var loadUrl = "server/login.php?username=" + query.username;
 		$.ajax ({
 			type: "GET",
 			url: loadUrl,
@@ -104,7 +103,7 @@ var AJAXManager =
 			cache: true
 		});
 
-		var loadUrl = "server/profile.php";
+		var loadUrl = "server/profile.php?q=" + query.q + "&username=" + query.username;
 		$.ajax ({
 			type: "POST",
 			url: loadUrl,

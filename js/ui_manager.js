@@ -145,8 +145,12 @@ var UIManager =
 		else
 		{
 			// Load regular main index
-			if(sessionStorage.username)	
-				AJAXManager.get_account_type(UIManager.init_main_page_with_type);
+			if(sessionStorage.username)
+			{
+				var username = sessionStorage.username;
+				var query = { username: username };
+				AJAXManager.get_account_type(query, UIManager.init_main_page_with_type);
+			}
 		}
 	},
 	
