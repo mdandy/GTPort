@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 		DAL::disconnect();
 		
 		if ($info != NULL)
-			$ret = array ("res" => "TRUE", "info" => $info, "tutor_application" => $tutor_application, "prev_education" => $prev_education);
+			$ret = array ("res" => "TRUE", "info" => $info[0], "tutor_application" => $tutor_application, "prev_education" => $prev_education);
 		else
 			$ret = array ("res" => "FALSE");
 	}
@@ -30,15 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
 		DAL::disconnect();
 		
 		if ($info != NULL)
-			$ret = array ("res" => "TRUE", "info" => $info, "department" => $department);
+			$ret = array ("res" => "TRUE", "info" => $info[0], "department" => $department);
 		else
 			$ret = array ("res" => "FALSE");
 	}
 	
 	echo (json_encode($ret));
 }
-
-function get_student_profile($username)
+else if ($_SERVER['REQUEST_METHOD'] === 'GET')
 {
 	
 }

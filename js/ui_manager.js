@@ -145,11 +145,8 @@ var UIManager =
 		else
 		{
 			// Load regular main index
-			var username = sessionStorage.username;
-			var query = { q : "account_type",
-						  username: username };
-	
-			AJAXManager.get_account_type(query, UIManager.init_main_page_with_type);
+			if(sessionStorage.username)	
+				AJAXManager.get_account_type(UIManager.init_main_page_with_type);
 		}
 	},
 	
@@ -188,6 +185,27 @@ var UIManager =
 			sourceListLabel:    "Eligilble",
         	targetListLabel:    "Applied"
 		});
+		
+		// Prepopulate data
+		var username = sessionStorage.username;
+		var query = { q : "student",
+					  username: username };
+					  
+		AJAXManager.get_student_profile(query, UIManager.populate_student_info)
+	},
+	
+	populate_student_info: function(data)
+	{
+		var form = document.forms["personal_info_student_form"];
+		form.name.value = data.info.Name;
+		form.dob.value = data.info.DOB;
+		form.gender.value = data.info.Gender;
+		form.address.value = data.info.Address;
+		form.permanent_address.value = data.info.Permanent_Address;
+		form.contact.value = data.info.Contact_No;
+		form.email.value = data.info.Email_Id;
+		form.major.value = data.info.Major;
+		form.degree.value = data.info.Degree;
 	},
 	
 	init_personal_info_faculty: function()

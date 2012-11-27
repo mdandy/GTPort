@@ -9,7 +9,8 @@ var JSManager =
 		var username = form.username.value;
 		var password = form.password.value;
 		
-		var query = { username: username, 
+		var query = { q : "login",
+					  username: username, 
 					  password: password };
 					  
 		AJAXManager.login(query, JSManager.login_success, JSManager.login_error);	
@@ -88,5 +89,37 @@ var JSManager =
 		template += "<strong>Error!</strong> Unable to create account.</div>";
 		$("#create_account_alert").append(template);
 		var user_type = form.user_type.value;
+	},
+	
+	/**
+	 * Student Profile
+	 */
+	update_student_profile: function(section)
+	{
+		if (section == "personal")
+		{
+			var form = document.forms["personal_info_student_form"];
+			var name = form.name.value;
+			var dob = form.dob.value;
+			var gender = form.gender.value;
+			var address = form.address.value;
+			var permanent_address = form.permanent_address.value;
+			var contact = form.contact.value;
+			var email = form.email.value;
+			var major = form.major.value;
+			var degree = form.degree.value;
+		}
+		else if (section == "tutor")
+		{
+			
+		}
+		else if (section == "education")
+		{
+			
+		}
+		
+		var register = UIManager.get_URL_Parameter("register");
+		if (register.length != 0)
+				window.location.href = "index.html";
 	}
 }

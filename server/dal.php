@@ -26,7 +26,7 @@ class DAL
 			}
 			catch(PDOException $e) 
 			{
-				echo ("Error: " . $e->getMessage());
+				// echo ("Error: " . $e->getMessage());
 				return false;
 			}
 		}
@@ -62,7 +62,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return NULL;
 	}
@@ -87,7 +87,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -139,7 +139,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return NULL;
 	}
@@ -161,7 +161,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return NULL;
 	}
@@ -181,7 +181,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return NULL;
 	}
@@ -204,7 +204,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 	}
 	
@@ -252,7 +252,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
         }
 		return false;
 	}
@@ -286,7 +286,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -306,7 +306,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -351,7 +351,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -367,7 +367,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -385,7 +385,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -403,7 +403,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -477,7 +477,7 @@ class DAL
         }
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
          
         try{   
@@ -533,7 +533,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -564,7 +564,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -596,7 +596,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -621,7 +621,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -653,7 +653,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -681,7 +681,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -709,7 +709,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -736,7 +736,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -760,7 +760,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -782,7 +782,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -803,7 +803,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -823,7 +823,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -871,7 +871,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -891,7 +891,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -947,7 +947,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -1006,7 +1006,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			echo ("Error: " . $e->getMessage());
+			// echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
