@@ -291,18 +291,23 @@ class DAL
 		return false;
 	}
 	
-	public static function insert_student_tutor_application($username, $code)
+	public static function insert_student_tutor_application($username, $codes)
 	{
 		try
 		{
 			$sql = "INSERT INTO Tutor_Application (Student_Id, Title) VALUES (";
 			$sql .= " (SELECT Student_Id FROM Student WHERE Username=:username),";
 			$sql .= " (SELECT Title FROM Course_Code WHERE Code=$code))";
-			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->bindParam(":code", $code, PDO::PARAM_STR, 64);
-			return $query->execute();
+			
+			$success = true;
+			for ($i = 0; $i < count($codes); $i++)
+			{
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":code", $code, PDO::PARAM_STR, 64);
+				$success = $success | $query->execute();
+			}
+			return $success;
 		}
 		catch(PDOException $e) 
 		{
