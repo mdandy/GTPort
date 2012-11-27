@@ -704,7 +704,7 @@ class DAL
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->bindParam(":student_Id", $student_Id);
+			$query->bindParam(":student_Id", $student_Id, PDO::PARAM_INT);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -818,7 +818,7 @@ class DAL
                     WHERE Student_Id=:student_id;";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":student_id", $student_id);
+			$query->bindParam(":student_id", $student_id, PDO::PARAM_INT);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
@@ -842,7 +842,7 @@ class DAL
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->bindParam(":student_id", $student_id);
+			$query->bindParam(":student_id", $student_id, PDO::PARAM_INT);
 			$query->bindParam(":course_code", $course_code, PDO::PARAM_STR, 64);
 			$query->execute();
 		}
