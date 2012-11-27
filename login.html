@@ -8,6 +8,7 @@
 	<script type="application/javascript" src="js/jquery-1.8.3.min.js"></script>
 	<script type="application/javascript" src="js/bootstrap.js"></script>
 	<script type="application/javascript" src="js/ajax_manager.js"></script>
+	<script type="application/javascript" src="js/js_manager.js"></script>
 	<script type="application/javascript" src="js/ui_manager.js"></script>
 	
 	<link rel="stylesheet" href="css/bootstrap.css" media="screen">
@@ -24,7 +25,7 @@
 			<h2 class="form-signin-heading">Enter your GTPort Account and Password</h2>
 			<input type="text" class="input-block-level" placeholder="Username" id="username" name="username">
 			<input type="password" class="input-block-level" placeholder="Password" id="password" name="password">
-			<button class="btn btn-large btn-primary" type="submit" onClick="AJAXManager.login();">Sign in</button>
+			<button class="btn btn-large btn-primary" type="submit" onClick="JSManager.login();">Sign in</button>
 			<button class="btn btn-large btn-primary" onClick="UIManager.show_create_account();">Create Account</button>
 		</form>
 		
@@ -64,7 +65,7 @@
 				</div>
 				
 				<button class="btn btn-large btn-primary" onClick="UIManager.hide_create_account();">Cancel</button>
-				<button class="btn btn-large btn-primary" onClick="AJAXManager.register();">Register!</button>
+				<button class="btn btn-large btn-primary" onClick="JSManager.register();">Register!</button>
 			</form>
 		</div>
 		

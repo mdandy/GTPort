@@ -146,7 +146,7 @@ class DAL
 	
 	/**
 	 * Student Profile
-	 */
+	 */ 
 	public static function get_student_information($username)
 	{
 		try

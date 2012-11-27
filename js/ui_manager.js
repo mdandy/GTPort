@@ -1,7 +1,8 @@
 var UIManager =
 {
-	url:				"",
-	
+	/**
+	 * General loading component script
+	 */
 	load_page: function(page_name, callback)
 	{
 		if (page_name !== undefined) 
@@ -75,11 +76,17 @@ var UIManager =
 		}
 	},
 	
+	/**
+	 * Helper
+	 */
 	get_URL_Parameter: function (name) 
 	{
 		return decodeURI((RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]);
 	},
 	
+	/**
+	 * Authentication
+	 */
 	isAuthenticated: function()
 	{
 		if (!sessionStorage.username)
@@ -116,6 +123,9 @@ var UIManager =
 		$("#create_account").hide("slow");
 	},
 	
+	/**
+	 * Initialize pages
+	 */
 	init_main_page: function()
 	{
 		UIManager.isAuthenticated();
@@ -135,7 +145,11 @@ var UIManager =
 		else
 		{
 			// Load regular main index
-			AJAXManager.get_account_type(UIManager.init_main_page_with_type);
+			var username = sessionStorage.username;
+			var query = { q : "account_type",
+						  username: username };
+	
+			AJAXManager.get_account_type(query, UIManager.init_main_page_with_type);
 		}
 	},
 	
