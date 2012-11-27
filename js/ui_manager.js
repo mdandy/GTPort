@@ -183,7 +183,15 @@ var UIManager =
 	
 	init_add_course: function()
 	{
+		$('#start-time').timepicker({
+			minuteStep: 5,
+			defaultTime: 'value'
+		});
 		
+		$('#stop-time').timepicker({
+			minuteStep: 5,
+			defaultTime: 'value'
+		});
 	},
 	
 	init_select_department: function()
