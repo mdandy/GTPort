@@ -45,6 +45,8 @@ var UIManager =
 		{
 			if (page_name === "personal_info_student.html")
 				UIManager.load_page(page_name, UIManager.init_personal_info_student);
+			if (page_name === "assign_tutor.html")
+				UIManager.load_page(page_name, UIManager.init_assign_tutor);
 			else
 				UIManager.load_page(page_name);
 		}
@@ -147,7 +149,15 @@ var UIManager =
 	{
 		$("#tutor_courses").pickList({
 			sourceListLabel:    "Eligilble",
-        	targetListLabel:    "Applied",	
+        	targetListLabel:    "Applied"
+		});
+	},
+	
+	init_assign_tutor: function()
+	{
+		$("#tutor_applicants").pickList({
+			sourceListLabel:    "Applied",
+        	targetListLabel:    "Approved"
 		});
 	}
 }
