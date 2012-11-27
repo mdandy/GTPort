@@ -1,12 +1,129 @@
 <h1>Add Course</h1>
 
-<p>
-	Bacon ipsum dolor sit amet leberkas doner meatloaf shankle fatback, 
-	short loin capicola. Corned beef pork loin pancetta flank, prosciutto 
-	bresaola tail. Shoulder t-bone sausage tri-tip capicola ground round 
-	rump filet mignon biltong strip steak doner shankle jerky chicken ham 
-	hock. Frankfurter venison capicola ribeye boudin shankle meatloaf cow 
-	tail pancetta jowl corned beef biltong. Jowl hamburger pork chop pig 
-	bresaola tenderloin drumstick leberkas spare ribs biltong salami swine 
-	short ribs shank shoulder. Swine corned beef tenderloin bresaola jerky.
-</p>
+<form id="add_course_form" onsubmit="return false;" class="form-horizontal">
+
+  <div class="control-group">
+    <label class="control-label">CRN</label>
+    <div class="controls">
+      <input type="text" id="crn" name="crn">
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label">Title</label>
+    <div class="controls">
+      <input type="text" id="title" name="title">
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label">Course Code</label>
+    <div class="controls">
+      <input type="text" id="course_code" name="course_code">
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label">Sections</label>
+    <div class="controls">
+      <input type="text" id="sections" name="sections">
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label">Instructors</label>
+    <div class="controls">
+      <input type="text" id="instructors" name="instructors">
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label">Term</label>
+    <div class="controls">
+      <select id="term" name="term">
+        <option value="fall">Fall</option>
+        <option value="spring">Spring</option>
+        <option value="summer">Summer</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label">Department(s)</label>
+    <div class="controls">
+      <select id="dept" name="dept" multiple="multiple">
+        <option value="AE">Aerospace Engineering</option>
+        <option value="BIO">Biology</option>
+        <option value="BME">Biomedical Engineering</option>
+        <option value="CS">Computer Science</option>
+        <option value="ECE">Electrical & Computer Engineering</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label">Credits</label>
+    <div class="controls">
+      <input type="text" id="disabledInput" name"credits" placeholder="3.0" disabled>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label">Days</label>
+    <div class="controls">
+      <label class="checkbox inline">
+        <input type="checkbox" id="M" value="M">M
+      </label>
+      <label class="checkbox inline">
+        <input type="checkbox" id="T" value="T">T
+      </label>
+      <label class="checkbox inline">
+        <input type="checkbox" id="W" value="W">W
+      </label>
+      <label class="checkbox inline">
+        <input type="checkbox" id="Th" value="Th">Th
+      </label>
+      <label class="checkbox inline">
+        <input type="checkbox" id="F" value="F">F
+      </label>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label">Time</label>
+    <div class="controls">
+      <div class="input-append bootstrap-timepicker-component">
+        <input type="text" class="timepicker-default input-small start-time" id="start-time" style="width: 67px;" value="7:05 AM">
+        <span class="add-on">
+          <i class="icon-time"></i>
+        </span>
+      </div>
+      <div class="input-append bootstrap-timepicker-component">
+        <input type="text" class="timepicker-default input-small stop-time" id="stop-time" style="width: 67px;" value="7:55 AM">
+        <span class="add-on">
+          <i class="icon-time"></i>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $('#start-time').timepicker({
+      minuteStep: 5,
+      defaultTime: 'value'
+    });
+    $('#stop-time').timepicker({
+      minuteStep: 5,
+      defaultTime: 'value'
+    });
+  </script>
+
+  <div class="control-group">
+    <label class="control-label">Location</label>
+    <div class="controls">
+      <input type="text" id="location" name="location">
+    </div>
+  </div>
+</form>
+
+</form>
