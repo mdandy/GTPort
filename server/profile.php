@@ -3,7 +3,7 @@
 require_once("dal.php");
 require_once("json.php");
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST')
+if (strcmp($_SERVER['REQUEST_METHOD'], 'POST') == 0)
 {
 	$q = $_POST["q"];
 	$username = $_POST["username"];
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	
 	echo (json_encode($ret));
 }
-else if ($_SERVER['REQUEST_METHOD'] == 'GET')
+else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 {
 	$q = $_GET["q"];
 	
