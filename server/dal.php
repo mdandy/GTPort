@@ -305,7 +305,7 @@ class DAL
 			{
 				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
 				$query->bindParam(":code", $codes[$i], PDO::PARAM_STR, 64);
-				$success = $success | $query->execute();
+				$success = $success & $query->execute();
 			}
 			return $success;
 		}
