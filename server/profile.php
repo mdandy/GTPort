@@ -6,7 +6,7 @@ require_once("json.php");
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
 	$q = $_GET["q"];
-	$username = $_GET["username"];
+	$username = $_POST["username"];
 	
 	$ret = NULL;
 	if (strcmp($q, "student_info") == 0)
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	}
 	else if (strcmp($q, "student_tutor_application") == 0)
 	{
-		$codes_raw = $_GET["code"];
+		$codes_raw = $_POST["code"];
 		$codes = explode("::", $codes_raw);
 
 		DAL::connect();
