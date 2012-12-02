@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	
 	$ret = NULL;
 	DAL::connect();
-	$success = register_course($username, $crn, $gradeMode);
+	$success = DAL::register_course($username, $crn, $gradeMode);
 	DAL::disconnect();
 	
 	if ($success)

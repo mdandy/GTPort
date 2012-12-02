@@ -5,7 +5,7 @@ require_once("json.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-	$q = $_GET["q"];
+	$q = $_POST["q"];
 	$username = $_POST["username"];
 	
 	$ret = NULL;
@@ -112,6 +112,19 @@ else if ($_SERVER['REQUEST_METHOD'] == 'GET')
 		
 		if ($info != NULL)
 			$ret = array ("res" => "TRUE", "info" => $info[0], "tutor_application" => $tutor_application, "prev_education" => $prev_education);
+		else
+			$ret = array ("res" => "FALSE");
+	}
+	else if (strcmp($q, "student_name") == 0)
+	{
+		$student_id = $_GET["student_id"];	
+		
+		DAL::connect();
+		$name = DAL::get_tutor_student_name($student_id);
+		DAL::disconnect();
+		
+		if ($name != NULL)
+			$ret = array ("res" => "TRUE", "data" => $name);
 		else
 			$ret = array ("res" => "FALSE");
 	}
