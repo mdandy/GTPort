@@ -23,18 +23,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 }
 else if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
-	$deptId = $_GET["dept_id"];	
-	$term = $_GET["term"];	
-	
-	DAL::connect();
-	$courses = DAL::get_course_selection($deptId, $term);
-	DAL::disconnect();
+	$q = $_POST["q"];
 	
 	$ret = NULL;
-	if ($courses != NULL)
-		$ret = array ("res" => "TRUE", "data" => $courses);
-	else
-		$ret = array ("res" => "FALSE");
+	if (strcmp($q, "course") == 0)
+	{
+		$deptId = $_GET["dept_id"];	
+		$term = $_GET["term"];	
+		
+		DAL::connect();
+		$courses = DAL::get_course_selection($deptId, $term);
+		DAL::disconnect();
+		
+		if ($courses != NULL)
+			$ret = array ("res" => "TRUE", "data" => $courses);
+		else
+			$ret = array ("res" => "FALSE");
+	}
+	else if (strcmp($q, "registration") == 0)
+	{
+		$CRNs_raw = $_GET["crn"];
+		$CRNs = explode("::", $CRNs_raw);	
+		
+		DAL::connect();
+		$courses = DAL::get_registration_complete_view($CRNs);
+		DAL::disconnect();
+		
+		if ($courses != NULL)
+			$ret = array ("res" => "TRUE", "data" => $courses);
+		else
+			$ret = array ("res" => "FALSE");
+	}
 	
 	echo (json_encode($ret));
 }
