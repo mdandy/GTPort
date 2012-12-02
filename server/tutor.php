@@ -11,8 +11,9 @@ if (strcmp($_SERVER['REQUEST_METHOD'], 'POST') == 0)
 	if (strcmp($q, "assign") == 0)
 	{
 		$username = $_POST["username"];
-		$student_Id = $_POST["student_id"];
-		
+		$student_Id_raw = $_POST["student_id"];
+		$student_Id = explode("::", $student_Id_raw);
+
 		DAL::connect();
 		$success = DAL::assign_tutor($username, $student_Id);
 		DAL::disconnect();
@@ -43,17 +44,17 @@ if (strcmp($_SERVER['REQUEST_METHOD'], 'POST') == 0)
 
 else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 {
-	$q = $_POST["q"];
+	$q = $_GET["q"];
 	
 	$ret = NULL;
 	if (strcmp($q, "applicant") == 0)
 	{
-		$username = $_GET["username"];	
+		$username = $_GET["username"];
 		
 		DAL::connect();
 		$applicant = DAL::get_tutor_applicants($username);
 		DAL::disconnect();
-		
+
 		if ($applicant != NULL)
 			$ret = array ("res" => "TRUE", "data" => $applicant);
 		else

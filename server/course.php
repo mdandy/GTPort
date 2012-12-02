@@ -24,7 +24,7 @@ if (strcmp($_SERVER['REQUEST_METHOD'], 'POST') == 0)
 
 else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 {
-	$q = $_POST["q"];
+	$q = $_GET["q"];
 	
 	$ret = NULL;
 	if (strcmp($q, "course") == 0)

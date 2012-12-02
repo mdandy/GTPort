@@ -295,7 +295,7 @@ class DAL
 	{
 		try
 		{
-			$sql = "INSERT INTO Tutor_Application (Student_Id, Title) VALUES (";
+			$sql = "INSERT IGNORE INTO Tutor_Application (Student_Id, Title) VALUES (";
 			$sql .= " (SELECT Student_Id FROM Student WHERE Username=:username),";
 			$sql .= " (SELECT Title FROM Course_Code WHERE Code=:code))";
 			$query = self::$dbh->prepare($sql);
@@ -303,6 +303,9 @@ class DAL
 			$success = true;
 			for ($i = 0; $i < count($codes); $i++)
 			{
+				if (strlen($codes[$i]) == 0)
+					continue;
+					
 				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
 				$query->bindParam(":code", $codes[$i], PDO::PARAM_STR, 64);
 				$success = $success & $query->execute();
@@ -469,6 +472,9 @@ class DAL
 			
 			for ($i = 0; $i < count($research_interests); $i++)
 			{
+				if (strlen($research_interests[$i]) == 0)
+					continue;
+					
 				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
 				$query->bindParam(":research_interest", $research_interests[$i], PDO::PARAM_STR, 64);
 				$query->execute();
@@ -645,16 +651,24 @@ class DAL
 		return false;
 	}
 	
-	public static function assign_tutor($username, $student_Id)
+	public static function assign_tutor($username, $student_Ids)
 	{
 		try
 		{
-			$sql = "INSERT INTO Tutor (Student_Id) VALUES (:student_Id)";
+			$sql = "INSERT IGNORE INTO Tutor (Student_Id) VALUES (:student_Id)";
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":student_Id", $student_Id, PDO::PARAM_INT);
-			$query->execute();
+			
+			$successful = true;
+			for ($i = 0; $i < count($student_Ids); $i++)
+			{
+				if (strlen($student_Ids[$i]) == 0)
+					continue;
+				
+				$query->bindParam(":student_Id", intval($student_Ids[$i]), PDO::PARAM_INT);
+				$successful &= $query->execute();
+			}
 
-            $sql = "INSERT INTO Tutor_Course (Student_Id, Title
+            $sql = "INSERT IGNORE INTO Tutor_Course (Student_Id, Title
                     ) VALUES (
 						:student_Id,
                         (SELECT DISTINCT Title FROM Faculty_Section NATURAL JOIN Course_Section
@@ -663,9 +677,17 @@ class DAL
                         )
                     )";
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->bindParam(":student_Id", $student_Id, PDO::PARAM_INT);
-			return $query->execute();
+			
+			for ($i = 0; $i < count($student_Ids); $i++)
+			{
+				if (strlen($student_Ids[$i]) == 0)
+					continue;
+				
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":student_Id", intval($student_Ids[$i]), PDO::PARAM_INT);
+				$successful &= $query->execute();
+			}
+			return $successful;
 		}
 		catch(PDOException $e) 
 		{

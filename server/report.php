@@ -5,7 +5,7 @@ require_once("json.php");
 
 if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 {
-	$q = $_POST["q"];
+	$q = $_GET["q"];
 	
 	$ret = NULL;
 	if (strcmp($q, "admin") == 0)

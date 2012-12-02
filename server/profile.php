@@ -17,7 +17,7 @@ if (strcmp($_SERVER['REQUEST_METHOD'], 'POST') == 0)
 		$address = $_POST["address"];
 		$permanentAddr = $_POST["permanent_address"];
 		$gender = $_POST["gender"];
-		$contactNumber = $_POST["contactNumber"];
+		$contactNumber = $_POST["contact_number"];
 		$major = $_POST["major"];
 		$degree = $_POST["degree"];
 		
@@ -72,7 +72,7 @@ if (strcmp($_SERVER['REQUEST_METHOD'], 'POST') == 0)
 		$address = $_POST["address"];
 		$permanentAddr = $_POST["permanent_address"];
 		$gender = $_POST["gender"];
-		$contactNumber = $_POST["contactNumber"];
+		$contactNumber = $_POST["contact_number"];
 		$position = $_POST["position"];
 		$research_interests_raw = $_POST["research_interests"];
 		$research_interests = explode("::", $research_interests_raw);
