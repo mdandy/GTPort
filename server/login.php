@@ -38,7 +38,8 @@ if (strcmp($_SERVER['REQUEST_METHOD'], 'POST') == 0)
 	
 	echo (json_encode($ret));
 }
-if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
+
+else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 {
 	$username = $_GET["username"];	
 	

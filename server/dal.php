@@ -352,7 +352,8 @@ class DAL
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -368,7 +369,8 @@ class DAL
 			$sql = "SELECT Dept_Id, Name FROM Department";
 			
 			$query = self::$dbh->prepare($sql);
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -386,7 +388,8 @@ class DAL
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":dept_Id", $dept_Id, PDO::PARAM_INT);
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -404,7 +407,8 @@ class DAL
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":course_title", $course_title, PDO::PARAM_STR, 64);
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -548,7 +552,8 @@ class DAL
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":deptId", $deptId);
 			$query->bindParam(":term", $term, PDO::PARAM_STR, 16);
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -602,7 +607,8 @@ class DAL
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":CRN", implode(", ". $CRN));
 			$query->bindParam(":aCRN", implode(", ". $CRN));
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -629,7 +635,8 @@ class DAL
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -685,7 +692,8 @@ class DAL
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":search_entry", "%" . $search_entry . "%");
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -709,7 +717,8 @@ class DAL
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":search_entry", "%" . $search_entry . "%");
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -729,7 +738,8 @@ class DAL
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -747,7 +757,8 @@ class DAL
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -765,7 +776,8 @@ class DAL
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":student_id", $student_id, PDO::PARAM_INT);
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -861,7 +873,8 @@ class DAL
 					) AS GRADE_TOTAL";
 			
 			$query = self::$dbh->prepare($sql);
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
@@ -877,47 +890,153 @@ class DAL
 	{
 		try
 		{
-			$sql = "SELECT Code, Title, Average_Grade
-                    FROM (
-                        SELECT Code, Title, CRN
-                        FROM Course_Code NATURAL JOIN Course NATURAL JOIN Course_Section
-                    ) AS Course_CRNs
-                    NATURAL JOIN (
-                        SELECT CRN, AVG(Grade) AS Average_Grade FROM (
-                            SELECT CRN, Grade FROM (
-                                SELECT CRN FROM Student_Section
-                                WHERE CRN IN (SELECT CRN FROM Course_Section)
-                                AND Grade='A'
-                            ) AS GRADE_A JOIN (SELECT 4 AS Grade) AS GRADE_VAL_4
-                            UNION
-                            SELECT CRN, Grade FROM (
-                                SELECT CRN FROM Student_Section
-                                WHERE CRN IN (SELECT CRN FROM Course_Section)
-                                AND Grade='B'
-                            ) AS GRADE_B JOIN (SELECT 3 AS Grade) AS GRADE_VAL_3
-                            UNION
-                            SELECT CRN, Grade FROM (
-                                SELECT CRN FROM Student_Section
-                                WHERE CRN IN (SELECT CRN FROM Course_Section)
-                                AND Grade='C'
-                            ) AS GRADE_C JOIN (SELECT 2 AS Grade) AS GRADE_VAL_2
-                            UNION
-                            SELECT CRN, Grade FROM (
-                                SELECT CRN FROM Student_Section
-                                WHERE CRN IN (SELECT CRN FROM Course_Section)
-                                AND Grade='D'
-                            ) AS GRADE_D JOIN (SELECT 1 AS Grade) AS GRADE_VAL_1
-                            UNION
-                            SELECT CRN, Grade FROM (
-                                SELECT CRN FROM Student_Section
-                                WHERE CRN IN (SELECT CRN FROM Course_Section)
-                                AND Grade='F'
-                            ) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
-                        ) AS GRADE_TOTAL GROUP BY CRN
-                    ) AS GRADE_TOTAL";
+			$sql = "SELECT Code, Title, AVG(Grade) AS Average_Grade FROM (
+						SELECT Title, Code, CRN
+						FROM Course_Code NATURAL JOIN Course_Section
+					) AS COURSE_REG 
+					JOIN (
+						SELECT Student_Id, CRN FROM (
+							SELECT Student_Id, CRN, Count(`DateTime`) AS Num_Visits
+							FROM Tutor_Log_DateTime GROUP BY CRN, Student_Id
+						) AS TUTOR_VISIT WHERE TUTOR_VISIT.Num_Visits > 3
+					) AS TUTOR_MORE_THAN_3 ON COURSE_REG.CRN=TUTOR_MORE_THAN_3.CRN
+					JOIN (
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='A'
+						) AS GRADE_A JOIN (SELECT 4 AS Grade) AS GRADE_VAL_4
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='B'
+						) AS GRADE_B JOIN (SELECT 3 AS Grade) AS GRADE_VAL_3
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='C'
+						) AS GRADE_C JOIN (SELECT 2 AS Grade) AS GRADE_VAL_2
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='D'
+						) AS GRADE_D JOIN (SELECT 1 AS Grade) AS GRADE_VAL_1
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='F'
+						) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
+					) AS STUDENT_GRADE 
+					ON COURSE_REG.CRN=STUDENT_GRADE.CRN
+					AND TUTOR_MORE_THAN_3.Student_Id=STUDENT_GRADE.Student_Id
+					GROUP BY Code, Title";
 			
 			$query = self::$dbh->prepare($sql);
-			return $query->execute();
+			$query->execute();
+			$more_than_three = $query->fetchAll(PDO::FETCH_ASSOC);
+			
+			$sql = "SELECT Code, Title, AVG(Grade) AS Average_Grade FROM (
+						SELECT Title, Code, CRN
+						FROM Course_Code NATURAL JOIN Course_Section
+					) AS COURSE_REG 
+					JOIN (
+						SELECT Student_Id, CRN FROM (
+							SELECT Student_Id, CRN, Count(`DateTime`) AS Num_Visits
+							FROM Tutor_Log_DateTime GROUP BY CRN, Student_Id
+						) AS TUTOR_VISIT WHERE TUTOR_VISIT.Num_Visits BETWEEN 1 AND 3
+					) AS TUTOR_BETWEEN_1_3 ON COURSE_REG.CRN=TUTOR_BETWEEN_1_3.CRN
+					JOIN (
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='A'
+						) AS GRADE_A JOIN (SELECT 4 AS Grade) AS GRADE_VAL_4
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='B'
+						) AS GRADE_B JOIN (SELECT 3 AS Grade) AS GRADE_VAL_3
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='C'
+						) AS GRADE_C JOIN (SELECT 2 AS Grade) AS GRADE_VAL_2
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='D'
+						) AS GRADE_D JOIN (SELECT 1 AS Grade) AS GRADE_VAL_1
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='F'
+						) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
+					) AS STUDENT_GRADE 
+					ON COURSE_REG.CRN=STUDENT_GRADE.CRN
+					AND TUTOR_BETWEEN_1_3.Student_Id=STUDENT_GRADE.Student_Id
+					GROUP BY Code, Title";
+					
+			$query = self::$dbh->prepare($sql);
+			$query->execute();
+			$one_to_three = $query->fetchAll(PDO::FETCH_ASSOC);
+			
+			$sql = "SELECT Code, Title, AVG(Grade) AS Average_Grade FROM (
+						SELECT Title, Code, CRN
+						FROM Course_Code NATURAL JOIN Course_Section
+					) AS COURSE_REG 
+					JOIN (
+						SELECT SS.Student_Id, SS.CRN FROM Student_Section AS SS WHERE
+						NOT EXISTS (SELECT * FROM Tutor_Log AS TL 
+						WHERE TL.Student_Id=SS.Student_Id AND TL.CRN=SS.CRN)
+					) AS TUTOR_BETWEEN_1_3 ON COURSE_REG.CRN=TUTOR_BETWEEN_1_3.CRN
+					JOIN (
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='A'
+						) AS GRADE_A JOIN (SELECT 4 AS Grade) AS GRADE_VAL_4
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='B'
+						) AS GRADE_B JOIN (SELECT 3 AS Grade) AS GRADE_VAL_3
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='C'
+						) AS GRADE_C JOIN (SELECT 2 AS Grade) AS GRADE_VAL_2
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='D'
+						) AS GRADE_D JOIN (SELECT 1 AS Grade) AS GRADE_VAL_1
+						UNION
+						SELECT Student_Id, CRN, Grade FROM (
+							SELECT Student_Id, CRN FROM Student_Section
+							WHERE CRN IN (SELECT CRN FROM Course_Section)
+							AND Grade='F'
+						) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
+					) AS STUDENT_GRADE 
+					ON COURSE_REG.CRN=STUDENT_GRADE.CRN
+					AND TUTOR_BETWEEN_1_3.Student_Id=STUDENT_GRADE.Student_Id
+					GROUP BY Code, Title";
+					
+			$query = self::$dbh->prepare($sql);
+			$query->execute();
+			$zero = $query->fetchAll(PDO::FETCH_ASSOC);
+			
+			return array ("more_than_three" => $more_than_three, "one_to_three" => $one_to_three, "zero" => $zero);
 		}
 		catch(PDOException $e) 
 		{
@@ -976,7 +1095,8 @@ class DAL
                     ) AS COURSE_GRADE ON FACULTY_INFO.CRN=COURSE_GRADE.CRN";
 			
 			$query = self::$dbh->prepare($sql);
-			return $query->execute();
+			$query->execute();
+			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e)
 		{
