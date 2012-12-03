@@ -45,7 +45,7 @@ if (strcmp($_SERVER['REQUEST_METHOD'], 'POST') == 0)
 else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 {
 	$q = $_GET["q"];
-	
+
 	$ret = NULL;
 	if (strcmp($q, "applicant") == 0)
 	{
@@ -75,13 +75,13 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 			$ret = array ("res" => "FALSE");
 	}
 	else if (strcmp($q, "find_by_code") == 0)
-	{
+	{	
 		$search_entry = $_GET["search_entry"];
 		
 		DAL::connect();
 		$tutors = DAL::find_tutor_by_course_code($search_entry);
 		DAL::disconnect();
-		
+
 		if ($tutors != NULL)
 			$ret = array ("res" => "TRUE", "data" => $tutors);
 		else

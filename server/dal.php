@@ -568,7 +568,7 @@ class DAL
 		return false;
 	}
 	
-	public static function register_course($username, $crn, $gradeMode)
+	public static function register_course($username, $crns, $gradeModes)
 	{
 		try
 		{
@@ -579,11 +579,20 @@ class DAL
                     ) ON DUPLICATE KEY UPDATE Grade_Mode=:uGradeMode";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->bindParam(":crn", $crn, PDO::PARAM_STR, 8);
-			$query->bindParam(":gradeMode", $gradeMode, PDO::PARAM_STR, 16);
-			$query->bindParam(":uGradeMode", $gradeMode, PDO::PARAM_STR, 16);
-			return $query->execute();
+			
+			$success = true;
+			for ($i = 0; $i < count($crns); $i++)
+			{
+				if (strlen($crns[$i]) == 0)
+					continue;
+				
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":crn", $crns[$i], PDO::PARAM_STR, 8);
+				$query->bindParam(":gradeMode", $gradeModes[$i], PDO::PARAM_STR, 16);
+				$query->bindParam(":uGradeMode", $gradeModes[$i], PDO::PARAM_STR, 16);
+				$success &= $query->execute();
+			}
+			return $success;
 		}
 		catch(PDOException $e) 
 		{
@@ -707,19 +716,18 @@ class DAL
                     FROM (
                         SELECT Course_Code.Title, Code, Student_ID
                             FROM Course_Code, Tutor_Course
-                            WHERE Course_Code.Code LIKE :search_entry
+                            WHERE Course_Code.Code LIKE '%$search_entry%'
                     ) AS MyTable
                     NATURAL JOIN Student
                     NATURAL JOIN RegularUser";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":search_entry", "%" . $search_entry . "%");
 			$query->execute();
 			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
 		catch(PDOException $e) 
 		{
-			// echo ("Error: " . $e->getMessage());
+			echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -732,13 +740,12 @@ class DAL
                     FROM (
                         SELECT Course_Code.Title, Code, Student_Id
                             FROM Course_Code, Tutor_Course
-                            WHERE Course_Code.Title LIKE :search_entry
+                            WHERE Course_Code.Title LIKE '%$search_entry%'
                     ) AS MyTable
                     NATURAL JOIN Student
                     NATURAL JOIN RegularUser";
 			
 			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":search_entry", "%" . $search_entry . "%");
 			$query->execute();
 			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}

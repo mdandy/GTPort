@@ -116,6 +116,19 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		else
 			$ret = array ("res" => "FALSE");
 	}
+	else if (strcmp($q, "tutor_application") == 0)
+	{
+		$username = $_GET["username"];	
+		
+		DAL::connect();
+		$tutor_application = DAL::get_student_tutor_application($username);
+		DAL::disconnect();
+		
+		if ($name != NULL)
+			$ret = array ("res" => "TRUE", "data" => $tutor_application);
+		else
+			$ret = array ("res" => "FALSE");
+	}
 	else if (strcmp($q, "student_name") == 0)
 	{
 		$student_id = $_GET["student_id"];	

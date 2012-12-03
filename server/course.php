@@ -6,8 +6,10 @@ require_once("json.php");
 if (strcmp($_SERVER['REQUEST_METHOD'], 'POST') == 0)
 {
 	$username = $_POST["username"];	
-	$crn = $_POST["crn"];	
-	$gradeMode = $_POST["grade_mode"];	
+	$crn_raw = $_POST["crn"];
+	$crn = explode("::", $crn_raw);
+	$gradeMode_raw = $_POST["grade_mode"];
+	$gradeMode = explode("::", $gradeMode_raw);
 	
 	$ret = NULL;
 	DAL::connect();
