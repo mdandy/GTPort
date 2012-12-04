@@ -36,6 +36,21 @@ if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		$report = DAL::get_student_report();
 		DAL::disconnect();
 		
+		// process the report to combine any crosslisted
+		$map = array();
+		for ($i = 0; $i < count($report); $i++)
+		{
+			$professor = $report[$i]["Name"];
+			if (array_key_exists("$professor", $map))
+			{
+				$index = $map[$professor];
+				$report[$index]["Code"] .= "/ " . $report[$i]["Code"];
+				unset($report[$i]);
+			}
+			else
+				$map[$professor] = $i;
+		}
+		
 		if ($report != NULL)
 			$ret = array ("res" => "TRUE", "data" => $report);
 		else
