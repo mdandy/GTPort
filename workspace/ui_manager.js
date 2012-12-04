@@ -1,5 +1,9 @@
 var UIManager =
 {
+	course_data:				null,
+    register_course_count:      null,
+    selectIndex:                null,
+	
 	/**
 	 * General loading component script
 	 */
@@ -185,11 +189,6 @@ var UIManager =
 	
 	init_personal_info_student: function()
 	{
-		$("#tutor_courses").pickList({
-			sourceListLabel:    "Eligilble",
-        	targetListLabel:    "Applied"
-		});
-		
 		// Prepopulate data
 		var username = sessionStorage.username;
 		var query = { q : "student",
@@ -210,11 +209,114 @@ var UIManager =
 		form.email.value = data.info.Email_Id;
 		form.major.value = data.info.Major;
 		form.degree.value = data.info.Degree;
+		
+		if (data.tutor_application.length > 0)
+		{
+			$("#tutor_courses").empty();
+			for (var index in data.tutor_application)
+			{
+				var code = data.tutor_application[index].Code;			
+				$("#tutor_courses").append(new Option(code,code));	
+			}
+		}
+		
+		if (data.prev_education.length > 0)
+		{
+			form.prev_name1.value = data.prev_education[0].Name_of_School;
+			$(form.prev_name1).prop('disabled', true);
+			form.prev_major1.value = data.prev_education[0].Major;
+			form.prev_degree1.value = data.prev_education[0].Degree;
+			form.prev_year1.value = data.prev_education[0].Year_of_Grad;
+			$(form.prev_year1).prop('disabled', true);
+			form.prev_gpa1.value = data.prev_education[0].GPA;	
+		}
+		
+		if (data.prev_education.length > 1)
+		{
+			form.prev_name2.value = data.prev_education[1].Name_of_School;
+			$(form.prev_name2).prop('disabled', true);
+			form.prev_major2.value = data.prev_education[1].Major;
+			form.prev_degree2.value = data.prev_education[1].Degree;
+			form.prev_year2.value = data.prev_education[1].Year_of_Grad;
+			$(form.prev_year2).prop('disabled', true);
+			form.prev_gpa2.value = data.prev_education[1].GPA;	
+		}
+		
+		if (data.prev_education.length > 2)
+		{
+			form.prev_name3.value = data.prev_education[2].Name_of_School;
+			$(form.prev_year3).prop('disabled', true);
+			form.prev_major3.value = data.prev_education[2].Major;
+			form.prev_degree3.value = data.prev_education[2].Degree;
+			form.prev_year3.value = data.prev_education[2].Year_of_Grad;
+			$(form.prev_year3).prop('disabled', true);
+			form.prev_gpa3.value = data.prev_education[2].GPA;	
+		}
+		
+		// Picklistify tutor application
+		$("#tutor_courses").pickList({
+			sourceListLabel:    "Eligilble",
+        	targetListLabel:    "Applied"
+		});
 	},
 	
 	init_personal_info_faculty: function()
 	{
+		// Prepopulate data
+		var username = sessionStorage.username;
+		var query = { q : "faculty",
+					  username: username };
+					  
+		AJAXManager.get_faculty_profile(query, UIManager.populate_faculty_into);
+	},
+	
+	populate_faculty_into: function(data)
+	{
+		// populate courses dropdown menu
+		if (data.course.length > 0)
+		{
+			$("#course").empty();
+			for (var index in data.course)
+			{
+				var title = data.course[index].Title;
+				var code = data.course[index].Code;
+				
+				$("#course").append(new Option(code,title));	
+			}
+		}
 		
+		// populate section dropdown menu
+		if (data.section.length > 0)
+		{
+			$("#section").empty();
+			for (var index in data.section)
+			{
+				var crn = data.section[index].CRN;
+				var letter = data.section[index].Letter;
+				
+				$("#section").append(new Option(letter,crn));	
+			}
+		}
+		
+		var form = document.forms["personal_info_faculty_form"];
+		form.name.value = data.info[0].Name;
+		form.dob.value = data.info[0].DOB;
+		form.gender.value = data.info[0].Gender;
+		form.address.value = data.info[0].Address;
+		form.permanent_address.value = data.info[0].Permanent_Address;
+		form.contact.value = data.info[0].Contact_No;
+		form.email.value = data.info[0].Email_Id;
+		
+		form.department.value = data.info[0].Dept_Id;
+		form.position.value = data.info[0].Position;
+		form.course.value = data.info[0].Title;
+		form.section.value = data.info[0].CRN;
+		
+		form.research.value = "";
+		for (var index in data.info)
+		{
+			form.research.value += data.info[index].Research_Interest + "\n";
+		}
 	},
 	
 	init_add_course: function()
@@ -245,15 +347,14 @@ var UIManager =
 		
 	},
 	
-	//////// Assign Tutor ////////
 	init_assign_tutor: function()
 	{
 		var query = { q : "applicant",
 					  username: sessionStorage.username };
 
-		AJAXManager.get_tutor_applicants(query, UIManager.init_assign_tutor_success);
+		AJAXManager.get_tutor_applicants(query, UIManager.init_assign_tutor_success, UIManager.init_assign_tutor_error);
 	},
-
+	
 	init_assign_tutor_success: function(data)
 	{
 		$("#tutor_applicants").empty();		
@@ -264,10 +365,379 @@ var UIManager =
 
 		$("#tutor_applicants").pickList({
 			sourceListLabel:    "Applied",
-     	targetListLabel:    "Approved"
+     		targetListLabel:    "Approved"
 		});
 	},
+	
+	init_assign_tutor_error: function()
+	{
+		$("#tutor_applicants").pickList({
+			sourceListLabel:    "Applied",
+     		targetListLabel:    "Approved"
+		});
+	},
+	
+	init_assign_grade: function()
+	{
+		
+	},
+	
+	init_find_tutors: function()
+	{
+		$("#tutors").empty();	
+	},
+	
+	/**
+	 * Tutor Logbook
+	 */
+	init_tutor_logbook: function()
+	{
+		$("#tname").val(sessionStorage.username);
+		
+		var date = new Date();
+		var yyyy = date.getFullYear();
+		var mm = date.getMonth() + 1;
+		var dd = date.getDate();
 
+		var hh = date.getHours();
+		var min = date.getMinutes();
+		var ss = date.getSeconds();
+
+		$("#time").html(yyyy + "-" + mm + "-" + dd + " " + hh + ":" + min + ":" + ss);
+
+		var query = {q: "tutor",
+								 username: sessionStorage.username};
+		AJAXManager.get_tutor_info(query, UIManager.init_tutor_logbook_success);
+	},
+
+	init_tutor_logbook_success: function(data) 
+	{
+		if (data != undefined)
+		{
+			$("#tname").val(data.name);
+
+			if (data.code !== undefined)
+			{
+				$("#codes").empty();
+				for (var index in data.code)
+				{
+					var code = data.code[index].Code;		
+					$("#codes").append(new Option(code,code));	
+				}
+			}
+		}
+	},
+
+	tutor_logbook_submit: function()
+	{
+		var form = document.forms["tutor_logbook_form"];
+
+		var user = sessionStorage.username;
+		var code = form.codes.value;
+		var st_id = form.st_id.value;
+		var sname = form.sname.value;
+		var time = $("#time").text();
+
+		var query = {q: "log",
+								 username: user,
+								 student_id: st_id,
+								 course_code: code};
+		AJAXManager.tutor_logbook(query);
+	},
+	
+	/**
+	 * Admin Report
+	 */
+	init_report_admin: function()
+	{
+		var query = {q : "admin"}
+		AJAXManager.get_report (query, UIManager.init_report_admin_success);
+	},
+	
+	init_report_admin_success: function(data)
+	{
+		var template = "";
+		for(var i in data)
+		{
+			template += "<tr>";
+			template += "<td>" + data[i].Code + "</td>";
+			template += "<td>" + data[i].Title + "</td>";
+			template += "<td>" + data[i].Average_Grade + "</td>";
+			template += "</tr>";
+		}
+		$("#report").html(template)
+	},
+	
+	init_report_faculty: function()
+	{
+		var query = {q : "faculty"}
+		AJAXManager.get_report (query, UIManager.init_report_faculty_success);
+	},
+	
+	init_report_faculty_success: function(data)
+	{
+		var template = "";
+		var a = data["more_than_three"];
+		var b = data["one_to_three"];
+		var c = data["zero"];
+		
+		for(var i in a)
+		{
+			template += "<tr>";
+			template += "<td>" + a[i].Code + "</td>";
+			template += "<td>" + a[i].Title + "</td>";
+			template += "<td> 3+ </td>"
+			template += "<td>" + a[i].Average_Grade + "</td>";
+			template += "</tr>";
+		}
+		for(var x in b)
+		{
+			template += "<tr>";
+			template += "<td>" + b[x].Code + "</td>";
+			template += "<td>" + b[x].Title + "</td>";
+			template += "<td> 1-3 </td>"
+			template += "<td>" + b[x].Average_Grade + "</td>";
+			template += "</tr>";
+		}
+		for(var y in c)
+		{
+			template += "<tr>";
+			template += "<td>" + c[y].Code + "</td>";
+			template += "<td>" + c[y].Title + "</td>";
+			template += "<td> 0 </td>"
+			template += "<td>" + c[y].Average_Grade + "</td>";
+			template += "</tr>";
+		}
+		$("#report").html(template)
+	},
+	
+	init_report_student: function()
+	{
+		var query = {q : "student"}
+		AJAXManager.get_report (query, UIManager.init_report_student_success);
+	},
+	
+	init_report_student_success: function(data)
+	{
+		var template = "";
+		for(var i in data)
+		{
+			template += "<tr>";
+			template += "<td>" + data[i].Name + "</td>";
+			template += "<td>" + data[i].Code + "</td>";
+			template += "<td>" + data[i].Title + "</td>";
+			template += "<td>" + data[i].Average_Grade + "</td>";
+			template += "</tr>";
+		}
+		$("#student-report").html(template)
+	},
+	
+	populate_tutor_application: function(data)
+	{
+		// populate section dropdown menu
+		if (data !== undefined)
+		{
+			$("#tutor_courses").empty();
+			for (var index in data)
+			{
+				var code = data[index].Code;		
+				$("#tutor_courses").append(new Option(code,code));	
+			}
+		}
+	},
+	
+	populate_courses: function()
+	{
+		var form = document.forms["personal_info_faculty_form"];
+		var dept_id = form.department.value;
+		
+		var query = {q : "course",
+					dept_id : dept_id}
+		AJAXManager.get_courses_list(query, UIManager.populate_courses_success);
+	},
+	
+	populate_courses_success: function(data)
+	{
+		// populate courses dropdown menu
+		if (data.length > 0)
+		{
+			$("#course").empty();
+			for (var index in data)
+			{
+				var title = data[index].Title;
+				var code = data[index].Code;
+				
+				$("#course").append(new Option(code,title));	
+			}
+		}
+	},
+	
+	/**
+	 * Faculty Profile
+	 */
+	populate_sections: function()
+	{
+		var form = document.forms["personal_info_faculty_form"];
+		var course_title = form.course.value;
+		
+		var query = {q : "section",
+					course_title : encodeURIComponent(course_title)}
+		AJAXManager.get_sections_list(query, UIManager.populate_section_success);
+	},
+	
+	populate_section_success: function(data)
+	{
+		// populate section dropdown menu
+		if (data.length > 0)
+		{
+			$("#section").empty();
+			for (var index in data)
+			{
+				var crn = data[index].CRN;
+				var letter = data[index].Letter;
+				
+				$("#section").append(new Option(letter,crn));	
+			}
+		}
+	},
+	
+	/**
+	 * Course Registration
+	 */
+	 register_course: function(){
+        var data = UIManager.course_data;
+        
+        var crn_str = "";
+        var mode_str = "";
+        for (var i = 0; i < UIManager.selectedIndex.length; i++) {
+            var crn = data[UIManager.selectedIndex[i]].CRN;
+            var gmode = $('#grading_mode'+i).val();
+            data[UIManager.selectedIndex[i]].gmode = gmode;
+            crn_str += crn + "::";
+            mode_str += gmode + "::";
+        }  
+        
+        var username = sessionStorage.username;
+        
+        var query = { username: username,
+              crn: crn_str,
+              grade_mode: mode_str };
+                  
+        AJAXManager.register_course(query, UIManager.registerCourseSuccess);
+    },
+    
+    registerCourseSuccess: function(data){
+        UIManager.load_page('registration_complete.html', UIManager.populateRegistrationComplete);
+    },
+    
+    populateRegistrationComplete: function(){
+        var data = UIManager.course_data;
+        var template = "";
+        
+        for (var i = 0; i < UIManager.selectedIndex.length; i++) {
+            
+            var gmode = data[UIManager.selectedIndex[i]].gmode;
+            
+            template += "<tr>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Code +"</td>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Title +"</td>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Letter +"</td>";
+            template += "<td>"+ gmode +"</td>";
+            template += "</tr>";
+        }        
+        $("#registration_complete").empty();
+        $("#registration_complete").html(template);
+    },
+    
+    populateCourse: function(){
+        var form = document.forms["select_department_form"];
+        var input = form.department.value;
+        var term = "Spring2013";
+        
+        var query = { q : "course",
+					  dept_id: input,
+                      term: term };
+					  
+        AJAXManager.get_courses(query, UIManager.populateCourseSuccess);
+    },
+    
+    populateCourseSuccess: function(data) {
+        UIManager.course_data = data;
+        UIManager.load_page('course_selection.html', UIManager.populateCourseSuccess2);
+    },
+    
+    returnToCourses: function() {
+        UIManager.load_page('course_selection.html', UIManager.populateCourseSuccess2);
+    },
+    
+    populateCourseSuccess2: function()
+    {
+        
+        var data = UIManager.course_data;
+        var template = "";
+        
+        for(var i in data){
+            template += "<tr>";
+            template += "<td><input id=\"registered"+i+"\" name=\"registered\" type=\"checkbox\"></td>";
+            template += "<td>"+ data[i].CRN +"</td>";
+            template += "<td>"+ data[i].Title +"</td>";
+            template += "<td>"+ data[i].Code +"</td>";
+            template += "<td>"+ data[i].Letter +"</td>";
+            template += "<td>"+ data[i].Name +"</td>";
+            template += "<td>"+ data[i].Day +"</td>";
+            template += "<td>"+ data[i].Time +"</td>";
+            template += "<td>"+ data[i].Location +"</td>";
+            template += "</tr>";
+        }        
+        $("#registration").empty();
+        $("#registration").html(template);
+    },
+    
+    populate_course_section2: function(){
+        
+        var form = document.forms["course_selection_form"];
+        
+        UIManager.selectedIndex = new Array();
+        var data = UIManager.course_data;
+        for(var i in data){
+            var isChecked = $('#registered'+i).attr('checked')?true:false;
+            if(isChecked){
+                UIManager.selectedIndex.push(i);
+            }
+        }
+        
+        UIManager.register_course_count = UIManager.selectedIndex.length;
+        
+        UIManager.load_page('course_selection2.html', UIManager.populate_course_section2_callback);
+    },
+    
+    populate_course_section2_callback: function(){
+        var template = "";
+        
+        var data = UIManager.course_data;
+        
+        for (var i = 0; i < UIManager.selectedIndex.length; i++) {
+            template += "<tr>";
+            template += "<td id=\"CRN" + i + "\">"+data[UIManager.selectedIndex[i]].CRN +"</td>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Title +"</td>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Code +"</td>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Letter +"</td>";
+            template += "<td>";
+            template += "<select id=\"grading_mode" + i + "\" name=\"grading_mode"+ i +"\">";
+			template += "<option value=\"registered\">Registered</option>";
+			template += "<option value=\"audit\">Audit</option>";
+			template += "<option value=\"pass_fail\">Pass/Fail</option>";
+            template += "</select>";
+			template += "</td>";
+            template += "</tr>";
+        }        
+        $("#registration").empty();
+        $("#registration").html(template);
+    },
+	
+	/**
+	 * Assign Tutor
+	 */
 	assign_tutor: function()
 	{
 		var form = document.forms["assign_tutor_form"];
@@ -295,18 +765,10 @@ var UIManager =
 		$("#assign_tutor_alert").append(template);
 	},
 	
-	//////// Assign Grade ////////
-	init_assign_grade: function()
-	{
-		
-	},
 	
-	//////// Find Tutors ////////
-	init_find_tutors: function()
-	{
-		$("#tutors").empty();		
-	},
-
+	/**
+	 * Find Tutor
+	 */
 	search_by_course_code: function()
 	{
 		$("#keyword-search").val("");
@@ -352,24 +814,4 @@ var UIManager =
 		$("#tutors").html(template);
 	},
 	
-	//////// Tutor Logbook ////////
-	init_tutor_logbook: function()
-	{
-		$("#tname").val(sessionStorage.username);
-	},
-	
-	init_report_admin: function()
-	{
-		
-	},
-	
-	init_report_faculty: function()
-	{
-		
-	},
-	
-	init_report_student: function()
-	{
-		
-	}
 }

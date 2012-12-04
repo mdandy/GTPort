@@ -334,6 +334,10 @@ var AJAXManager =
 					template += "<button type='button' class='close' data-dismiss='alert'>×</button>";
 					template += "<strong>Success!</strong> Faculty profile has been updated.</div>";
 					$("#personal_info_faculty_alert").append(template);
+					
+					var register = UIManager.get_URL_Parameter("register");
+					if (register != "null")
+						window.location.href = "index.html";
 				}
 				else
 				{
@@ -599,6 +603,73 @@ var AJAXManager =
 			{
 				if (data.res == "TRUE")
 					success(data.data);
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+	},
+	
+	get_tutor_info: function(query, success)
+	{
+		$.ajaxSetup (
+		{
+			cache: true
+		});
+
+		var loadUrl = "server/tutor.php?q=" + query.q + "&username=" + query.username;
+		$.ajax ({
+			type: "GET",
+			url: loadUrl,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+					success(data);
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+	},
+
+	tutor_logbook: function(query)
+	{
+		$.ajaxSetup (
+		{
+			cache: true
+		});
+
+		var loadUrl = "server/tutor.php";
+		$.ajax ({
+			type: "POST",
+			url: loadUrl,
+			data: query,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+				{
+					var template = "<div class='alert alert-success'>";
+					template += "<button type='button' class='close' data-dismiss='alert'>×</button>";
+					template += "<strong>Success!</strong> Tutor Log Submitted!</div>";
+					$("#tutor_log_alert").append(template);
+					
+					var register = UIManager.get_URL_Parameter("register");
+					if (register != "null")
+						window.location.href = "index.html";
+				}
+				else
+				{
+					var template = "<div class='alert alert-error'>";
+					template += "<button type='button' class='close' data-dismiss='alert'>×</button>";
+					template += "<strong>Error!</strong> Unable to submit tutor log</div>";
+					$("#tutor_log_alert").append(template);
+				}
 			},
 			error: function(jqXHR, textStatus, errorThrown) 
 			{

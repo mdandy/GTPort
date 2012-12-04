@@ -426,6 +426,45 @@ var UIManager =
 		var ss = date.getSeconds();
 
 		$("#time").html(yyyy + "-" + mm + "-" + dd + " " + hh + ":" + min + ":" + ss);
+
+		var query = {q: "tutor",
+								 username: sessionStorage.username};
+		AJAXManager.get_tutor_info(query, UIManager.init_tutor_logbook_success);
+	},
+	
+	init_tutor_logbook_success: function(data) 
+	{
+		if (data != undefined)
+		{
+			$("#tname").val(data.name);
+
+			if (data.code !== undefined)
+			{
+				$("#codes").empty();
+				for (var index in data.code)
+				{
+					var code = data.code[index].Code;		
+					$("#codes").append(new Option(code,code));	
+				}
+			}
+		}
+	},
+
+	tutor_logbook_submit: function()
+	{
+		var form = document.forms["tutor_logbook_form"];
+
+		var user = sessionStorage.username;
+		var code = form.codes.value;
+		var st_id = form.st_id.value;
+		var sname = form.sname.value;
+		var time = $("#time").text();
+
+		var query = {q: "log",
+								 username: user,
+								 student_id: st_id,
+								 course_code: code};
+		AJAXManager.tutor_logbook(query);
 	},
 	
 	init_report_admin: function()
