@@ -63,6 +63,8 @@ var JSManager =
 			return;
 		}
 		
+		sessionStorage.register_type = "faculty";
+		
 		var query = { q : "register",
 					  username: username, 
 					  password: password };
@@ -76,7 +78,7 @@ var JSManager =
 		var username = form.username.value;
 		sessionStorage.username = username;
 		
-		if (user_type == "faculty")
+		if (sessionStorage.register_type == "faculty")
 			window.location.href = "index.html?register=faculty";
 		else
 			window.location.href = "index.html?register=student";
