@@ -357,17 +357,86 @@ var UIManager =
 	
 	init_report_admin: function()
 	{
-		
+		var query = {q : "admin"}
+		AJAXManager.get_report (query, UIManager.init_report_admin_success);
+	},
+	
+	init_report_admin_success: function(data)
+	{
+		var template = "";
+		for(var i in data)
+		{
+			template += "<tr>";
+			template += "<td>" + data[i].Code + "</td>";
+			template += "<td>" + data[i].Title + "</td>";
+			template += "<td>" + data[i].Average_Grade + "</td>";
+			template += "</tr>";
+		}
+		$("#report").html(template)
 	},
 	
 	init_report_faculty: function()
 	{
+		var query = {q : "faculty"}
+		AJAXManager.get_report (query, UIManager.init_report_faculty_success);
+	},
+	
+	init_report_faculty_success: function(data)
+	{
+		var template = "";
+		var a = data["more_than_three"];
+		var b = data["one_to_three"];
+		var c = data["zero"];
 		
+		for(var i in a)
+		{
+			template += "<tr>";
+			template += "<td>" + a[i].Code + "</td>";
+			template += "<td>" + a[i].Title + "</td>";
+			template += "<td> 3+ </td>"
+			template += "<td>" + a[i].Average_Grade + "</td>";
+			template += "</tr>";
+		}
+		for(var x in b)
+		{
+			template += "<tr>";
+			template += "<td>" + b[x].Code + "</td>";
+			template += "<td>" + b[x].Title + "</td>";
+			template += "<td> 1-3 </td>"
+			template += "<td>" + b[x].Average_Grade + "</td>";
+			template += "</tr>";
+		}
+		for(var y in c)
+		{
+			template += "<tr>";
+			template += "<td>" + c[y].Code + "</td>";
+			template += "<td>" + c[y].Title + "</td>";
+			template += "<td> 0 </td>"
+			template += "<td>" + c[y].Average_Grade + "</td>";
+			template += "</tr>";
+		}
+		$("#report").html(template)
 	},
 	
 	init_report_student: function()
 	{
-		
+		var query = {q : "student"}
+		AJAXManager.get_report (query, UIManager.init_report_student_success);
+	},
+	
+	init_report_student_success: function(data)
+	{
+		var template = "";
+		for(var i in data)
+		{
+			template += "<tr>";
+			template += "<td>" + data[i].Name + "</td>";
+			template += "<td>" + data[i].Code + "</td>";
+			template += "<td>" + data[i].Title + "</td>";
+			template += "<td>" + data[i].Average_Grade + "</td>";
+			template += "</tr>";
+		}
+		$("#student-report").html(template)
 	},
 	
 	populate_tutor_application: function(data)

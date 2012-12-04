@@ -4,6 +4,9 @@ var AJAXManager =
 {
 	url:				"localhost/",
 	
+	/**
+	 * Authentication
+	 */
 	login: function(query, success, error)
 	{
 		$.ajaxSetup (
@@ -96,6 +99,9 @@ var AJAXManager =
 		});
 	},
 	
+	/**
+	 * Student Profile
+	 */
 	update_student_info: function(query, success)
 	{
 		$.ajaxSetup (
@@ -233,6 +239,9 @@ var AJAXManager =
 		});
 	},
 	
+	/**
+	 * Faculty Profile
+	 */
 	update_faculty_info: function(query)
 	{
 		$.ajaxSetup (
@@ -292,6 +301,39 @@ var AJAXManager =
 				{	
 					if (error !== undefined)
 						error(data);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+	},
+	
+	/**
+	 * Report
+	 */
+	get_report: function(query, success, error)
+	{
+		$.ajaxSetup (
+		{
+			cache: true
+		});
+
+		var loadUrl = "server/report.php?q=" + query.q;
+		$.ajax ({
+			type: "GET",
+			url: loadUrl,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+					success(data.data);
+				else
+				{	
+					if (error !== undefined)
+						error(data.data);
 				}
 			},
 			error: function(jqXHR, textStatus, errorThrown) 
