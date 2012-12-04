@@ -107,12 +107,12 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		
 		DAL::connect();
 		$info = DAL::get_student_information($username);
-		$tutor_application = DAL::get_student_tutor_application($username);
+		//$tutor_application = DAL::get_student_tutor_application($username);
 		$prev_education = DAL::get_student_previous_education($username);
 		DAL::disconnect();
 		
 		if ($info != NULL)
-			$ret = array ("res" => "TRUE", "info" => $info[0], "tutor_application" => $tutor_application, "prev_education" => $prev_education);
+			$ret = array ("res" => "TRUE", "info" => $info[0], "prev_education" => $prev_education);
 		else
 			$ret = array ("res" => "FALSE");
 	}
@@ -148,11 +148,17 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		
 		DAL::connect();
 		$info = DAL::get_faculty_information($username);
-		$department = DAL::get_department();
+		
+		$dept_id = $info[0]["Dept_Id"];
+		$course_title = $info[0]["Title"];
+		
+		$course = DAL::get_course_code($dept_id);
+		$section = DAL::get_section($course_title);
+		//$department = DAL::get_department();
 		DAL::disconnect();
 		
 		if ($info != NULL)
-			$ret = array ("res" => "TRUE", "info" => $info[0], "department" => $department);
+			$ret = array ("res" => "TRUE", "info" => $info[0], "course" => $course, "section" => $section);
 		else
 			$ret = array ("res" => "FALSE");
 	}

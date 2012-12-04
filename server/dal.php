@@ -96,14 +96,7 @@ class DAL
 	{
 		try
 		{		
-			$sql = "SELECT COUNT(*) FROM Student WHERE Username=:username";
-			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->execute();
-			$num = $query->fetchColumn();
-			$query->closeCursor();
-			
-			if ($num > 0)
+			if (self::is_student_exist($username))
 			{
 				$sql = "SELECT COUNT(*) FROM Tutor WHERE Student_Id=(SELECT Student_Id FROM Student WHERE Username=:username)";
 				$query = self::$dbh->prepare($sql);
@@ -125,7 +118,7 @@ class DAL
 			$num = $query->fetchColumn();
 			$query->closeCursor();
 			
-			if($num > 0)
+			if(self::is_faculty_exist($username))
 				return "faculty";
 			
 			$sql = "SELECT COUNT(*) FROM Administrator WHERE Username=:username";
@@ -142,6 +135,34 @@ class DAL
 			// echo ("Error: " . $e->getMessage());
 		}
 		return NULL;
+	}
+	
+	public static function is_student_exist($username)
+	{
+		$sql = "SELECT COUNT(*) FROM Student WHERE Username=:username";
+		$query = self::$dbh->prepare($sql);
+		$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+		$query->execute();
+		$num = $query->fetchColumn();
+		$query->closeCursor();
+			
+		if ($num > 0)
+			return true;
+		return false;
+	}
+	
+	public static function is_faculty_exist($username)
+	{
+		$sql = "SELECT COUNT(*) FROM Faculty WHERE Username=:username";
+		$query = self::$dbh->prepare($sql);
+		$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+		$query->execute();
+		$num = $query->fetchColumn();
+		$query->closeCursor();
+		
+		if ($num > 0)
+			return true;
+		return false;
 	}
 	
 	/**
@@ -239,16 +260,27 @@ class DAL
 			$query->bindParam(":uGender", $gender, PDO::PARAM_STR, 8);
 			$query->bindParam(":uContactNumber", $contactNumber, PDO::PARAM_STR, 16);
 			$query->execute();
-			
-			$sql = "INSERT INTO Student (Username, Major, Degree)";
-			$sql .= " VALUES (:username, :major, :degree) ON DUPLICATE KEY UPDATE";
-			$sql .= " Major=:major, Degree=:degree";
-			
-			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->bindParam(":major", $major, PDO::PARAM_STR, 64);
-			$query->bindParam(":degree", $degree, PDO::PARAM_STR, 64);
-			return $query->execute();
+
+			if (self::is_student_exist($username))
+			{
+				$sql = "UPDATE Student SET Major=:major, Degree=:degree WHERE Username=:username";
+				$query = self::$dbh->prepare($sql);
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":major", $major, PDO::PARAM_STR, 64);
+				$query->bindParam(":degree", $degree, PDO::PARAM_STR, 64);
+				return $query->execute();
+			}
+			else
+			{
+				$sql = "INSERT INTO Student (Username, Major, Degree)";
+				$sql .= " VALUES (:username, :major, :degree)";
+				
+				$query = self::$dbh->prepare($sql);
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":major", $major, PDO::PARAM_STR, 64);
+				$query->bindParam(":degree", $degree, PDO::PARAM_STR, 64);
+				return $query->execute();
+			}
 		}
 		catch(PDOException $e) 
 		{
@@ -326,29 +358,31 @@ class DAL
 	{
 		try
 		{
-			$sql = "SELECT Name, Email_Id, DOB, Address, Permanent_Address, Gender, 
-                        Contact_No, Position, Research_Interest, Dept_Name, Letter, Course
+			$sql = "SELECT DISTINCT Name, Email_Id, DOB, Address, Permanent_Address, Gender, 
+                        Contact_No, Position, Research_Interest, Dept_Id, Dept_Name, COURSE_TITLE.Title, Letter, Course
                     FROM (
                         SELECT Name, Email_Id, DOB, Address, Permanent_Address, Gender, 
                             Contact_No, Position, Instructor_Id
                         FROM RegularUser AS R NATURAL JOIN Faculty AS F
                         WHERE R.Username=:username
                     ) AS FACULTY_INFO 
-                    JOIN (
-                        SELECT Research_Interest, Name AS Dept_Name, Instructor_Id
-                        FROM Research_Interests 
-                        	NATURAL JOIN Department_Faculty 
-                        	NATURAL JOIN Department
+					LEFT JOIN (
+						SELECT Research_Interest, Instructor_Id
+						FROM Research_Interests
+					) AS FACULTY_RESEARCH ON FACULTY_INFO.Instructor_Id=FACULTY_RESEARCH.Instructor_Id  
+                    LEFT JOIN (
+                        SELECT Name AS Dept_Name, Dept_Id, Instructor_Id
+                        FROM Department_Faculty NATURAL JOIN Department
                     ) AS FACULTY_EXTRA ON FACULTY_INFO.Instructor_Id=FACULTY_EXTRA.Instructor_Id  
-                    JOIN (
+                    LEFT JOIN (
                         SELECT Letter, Instructor_Id, CRN
                         FROM Faculty_Section NATURAL JOIN Section
                     ) AS FACULTY_SECTION ON FACULTY_INFO.Instructor_Id=FACULTY_SECTION.Instructor_Id
-                    JOIN (
+                    LEFT JOIN (
                         SELECT CRN, Title
                         FROM Course_Section
                     ) AS COURSE_TITLE ON FACULTY_SECTION.CRN=COURSE_TITLE.CRN
-                    JOIN (
+                    LEFT JOIN (
                         SELECT Title, Code AS Course
                         FROM Course_Code
                     ) AS COURSE_CODE ON COURSE_TITLE.Title=COURSE_CODE.Title";
@@ -360,7 +394,7 @@ class DAL
 		}
 		catch(PDOException $e) 
 		{
-			// echo ("Error: " . $e->getMessage());
+			 //echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -453,14 +487,25 @@ class DAL
 			$query->bindParam(":uContactNumber", $contactNumber, PDO::PARAM_STR, 16);
 			$query->execute();
             
-            $sql = "INSERT INTO Faculty (Username, Position) VALUES (:username, :position)
-                    ON DUPLICATE KEY UPDATE Position=:uPosition";
-			
-			$query = self::$dbh->prepare($sql);
-			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->bindParam(":position", $position, PDO::PARAM_STR, 64);
-			$query->bindParam(":uPosition", $position, PDO::PARAM_STR, 64);
-			$success = $query->execute();
+			if (self::is_faculty_exist($username))
+			{
+				$sql = "UPDATE Faculty SET Position=:uPosition WHERE Username=:username";
+				
+				$query = self::$dbh->prepare($sql);
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":uPosition", $position, PDO::PARAM_STR, 64);
+				$success = $query->execute();
+
+			}
+			else
+			{
+				$sql = "INSERT INTO Faculty (Username, Position) VALUES (:username, :position)";
+				
+				$query = self::$dbh->prepare($sql);
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":position", $position, PDO::PARAM_STR, 64);
+				$success = $query->execute();
+			}
 			
 			$sql = "INSERT IGNORE INTO Research_Interests (Instructor_Id, Research_Interest) 
 					VALUES (
