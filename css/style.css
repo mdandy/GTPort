@@ -10,6 +10,7 @@ body
 textarea
 {
 	resize: none;
+	width: 350px;
 }
 
 h1

@@ -210,11 +210,98 @@ var UIManager =
 		form.email.value = data.info.Email_Id;
 		form.major.value = data.info.Major;
 		form.degree.value = data.info.Degree;
+		
+		if (data.prev_education.length > 0)
+		{
+			form.prev_name1.value = data.prev_education[0].Name_of_School;
+			$(form.prev_name1).prop('disabled', true);
+			form.prev_major1.value = data.prev_education[0].Major;
+			form.prev_degree1.value = data.prev_education[0].Degree;
+			form.prev_year1.value = data.prev_education[0].Year_of_Grad;
+			$(form.prev_year1).prop('disabled', true);
+			form.prev_gpa1.value = data.prev_education[0].GPA;	
+		}
+		
+		if (data.prev_education.length > 1)
+		{
+			form.prev_name2.value = data.prev_education[1].Name_of_School;
+			$(form.prev_name2).prop('disabled', true);
+			form.prev_major2.value = data.prev_education[1].Major;
+			form.prev_degree2.value = data.prev_education[1].Degree;
+			form.prev_year2.value = data.prev_education[1].Year_of_Grad;
+			$(form.prev_year2).prop('disabled', true);
+			form.prev_gpa2.value = data.prev_education[1].GPA;	
+		}
+		
+		if (data.prev_education.length > 2)
+		{
+			form.prev_name3.value = data.prev_education[2].Name_of_School;
+			$(form.prev_year3).prop('disabled', true);
+			form.prev_major3.value = data.prev_education[2].Major;
+			form.prev_degree3.value = data.prev_education[2].Degree;
+			form.prev_year3.value = data.prev_education[2].Year_of_Grad;
+			$(form.prev_year3).prop('disabled', true);
+			form.prev_gpa3.value = data.prev_education[2].GPA;	
+		}
 	},
 	
 	init_personal_info_faculty: function()
 	{
+		// Prepopulate data
+		var username = sessionStorage.username;
+		var query = { q : "faculty",
+					  username: username };
+					  
+		AJAXManager.get_faculty_profile(query, UIManager.populate_faculty_into);
+	},
+	
+	populate_faculty_into: function(data)
+	{
+		// populate courses dropdown menu
+		if (data.course.length > 0)
+		{
+			$("#course").empty();
+			for (var index in data.course)
+			{
+				var title = data.course[index].Title;
+				var code = data.course[index].Code;
+				
+				$("#course").append(new Option(code,title));	
+			}
+		}
 		
+		// populate section dropdown menu
+		if (data.section.length > 0)
+		{
+			$("#section").empty();
+			for (var index in data.section)
+			{
+				var crn = data.section[index].CRN;
+				var letter = data.section[index].Letter;
+				
+				$("#section").append(new Option(letter,crn));	
+			}
+		}
+		
+		var form = document.forms["personal_info_faculty_form"];
+		form.name.value = data.info[0].Name;
+		form.dob.value = data.info[0].DOB;
+		form.gender.value = data.info[0].Gender;
+		form.address.value = data.info[0].Address;
+		form.permanent_address.value = data.info[0].Permanent_Address;
+		form.contact.value = data.info[0].Contact_No;
+		form.email.value = data.info[0].Email_Id;
+		
+		form.department.value = data.info[0].Dept_Id;
+		form.position.value = data.info[0].Position;
+		form.course.value = data.info[0].Title;
+		form.section.value = data.info[0].CRN;
+		
+		form.research.value = "";
+		for (var index in data.info)
+		{
+			form.research.value += data.info[index].Research_Interest + "\n";
+		}
 	},
 	
 	init_add_course: function()
@@ -279,6 +366,11 @@ var UIManager =
 	},
 	
 	init_report_student: function()
+	{
+		
+	},
+	
+	populate_tutor_application: function(data)
 	{
 		
 	}

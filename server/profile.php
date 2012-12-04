@@ -158,7 +158,7 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		DAL::disconnect();
 		
 		if ($info != NULL)
-			$ret = array ("res" => "TRUE", "info" => $info[0], "course" => $course, "section" => $section);
+			$ret = array ("res" => "TRUE", "info" => $info, "course" => $course, "section" => $section);
 		else
 			$ret = array ("res" => "FALSE");
 	}

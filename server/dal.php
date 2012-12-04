@@ -359,7 +359,8 @@ class DAL
 		try
 		{
 			$sql = "SELECT DISTINCT Name, Email_Id, DOB, Address, Permanent_Address, Gender, 
-                        Contact_No, Position, Research_Interest, Dept_Id, Dept_Name, COURSE_TITLE.Title, Letter, Course
+                        Contact_No, Position, Research_Interest, Dept_Id, Dept_Name, COURSE_TITLE.Title, 
+						FACULTY_SECTION.CRN, Letter, Course
                     FROM (
                         SELECT Name, Email_Id, DOB, Address, Permanent_Address, Gender, 
                             Contact_No, Position, Instructor_Id
