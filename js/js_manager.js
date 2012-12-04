@@ -122,19 +122,6 @@ var JSManager =
 						  degree: degree };
 						  
 			AJAXManager.update_student_info(query, UIManager.populate_tutor_application);
-			
-			var query = { q : "student_info",
-					      username: sessionStorage.username, 
-					      name: name, 
-						  email: email, 
-						  dob: dob, 
-						  address: address, 
-						  permanent_address: permanent_address, 
-						  gender: gender, 
-						  contact_number: contact, 
-						  major: major, 
-						  degree: degree };
-			AJAXManager.update_student_info(query, UIManager.populate_tutor_application);
 		}
 		else if (section == "tutor")
 		{
