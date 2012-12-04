@@ -125,7 +125,21 @@ var JSManager =
 		}
 		else if (section == "tutor")
 		{
-			
+			var form = document.forms["personal_info_student_form"];
+			var applications = form.tutor_courses;
+			var codes = "";
+			for (var index=0; index<applications.length; index++) 
+			{
+				var code = applications[index];
+				if (code.selected == true)
+					codes += code.value + "::";
+			}
+	
+			var query = { q : "student_tutor_application", 
+						  username: sessionStorage.username,
+						  code: codes };
+	
+			AJAXManager.update_tutor_application(query);
 		}
 		else if (section == "education")
 		{

@@ -189,11 +189,6 @@ var UIManager =
 	
 	init_personal_info_student: function()
 	{
-		$("#tutor_courses").pickList({
-			sourceListLabel:    "Eligilble",
-        	targetListLabel:    "Applied"
-		});
-		
 		// Prepopulate data
 		var username = sessionStorage.username;
 		var query = { q : "student",
@@ -214,6 +209,16 @@ var UIManager =
 		form.email.value = data.info.Email_Id;
 		form.major.value = data.info.Major;
 		form.degree.value = data.info.Degree;
+		
+		if (data.tutor_application.length > 0)
+		{
+			$("#tutor_courses").empty();
+			for (var index in data.tutor_application)
+			{
+				var code = data.tutor_application[index].Code;			
+				$("#tutor_courses").append(new Option(code,code));	
+			}
+		}
 		
 		if (data.prev_education.length > 0)
 		{
@@ -247,6 +252,12 @@ var UIManager =
 			$(form.prev_year3).prop('disabled', true);
 			form.prev_gpa3.value = data.prev_education[2].GPA;	
 		}
+		
+		// Picklistify tutor application
+		$("#tutor_courses").pickList({
+			sourceListLabel:    "Eligilble",
+        	targetListLabel:    "Applied"
+		});
 	},
 	
 	init_personal_info_faculty: function()
@@ -445,7 +456,16 @@ var UIManager =
 	
 	populate_tutor_application: function(data)
 	{
-		
+		// populate section dropdown menu
+		if (data !== undefined)
+		{
+			$("#tutor_courses").empty();
+			for (var index in data)
+			{
+				var code = data[index].Code;		
+				$("#tutor_courses").append(new Option(code,code));	
+			}
+		}
 	},
 	
 	populate_courses: function()

@@ -107,12 +107,12 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		
 		DAL::connect();
 		$info = DAL::get_student_information($username);
-		//$tutor_application = DAL::get_student_tutor_application($username);
+		$tutor_application = DAL::get_student_tutor_application($username);
 		$prev_education = DAL::get_student_previous_education($username);
 		DAL::disconnect();
 		
 		if ($info != NULL)
-			$ret = array ("res" => "TRUE", "info" => $info[0], "prev_education" => $prev_education);
+			$ret = array ("res" => "TRUE", "info" => $info[0], "tutor_application" => $tutor_application, "prev_education" => $prev_education);
 		else
 			$ret = array ("res" => "FALSE");
 	}
@@ -124,7 +124,7 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		$tutor_application = DAL::get_student_tutor_application($username);
 		DAL::disconnect();
 		
-		if ($name != NULL)
+		if ($tutor_application != NULL)
 			$ret = array ("res" => "TRUE", "data" => $tutor_application);
 		else
 			$ret = array ("res" => "FALSE");

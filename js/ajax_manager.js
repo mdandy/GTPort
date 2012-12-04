@@ -144,6 +144,44 @@ var AJAXManager =
 		});
 	},
 	
+	update_tutor_application: function(query)
+	{
+		$.ajaxSetup (
+		{
+			cache: false
+		});
+
+		var loadUrl = "server/profile.php";
+		$.ajax ({
+			type: "POST",
+			url: loadUrl,
+			data: query,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+				{
+					var template = "<div class='alert alert-success'>";
+					template += "<button type='button' class='close' data-dismiss='alert'>×</button>";
+					template += "<strong>Success!</strong> Tutor application has been updated.</div>";
+					$("#personal_info_student_2_alert").append(template);
+				}
+				else
+				{
+					var template = "<div class='alert alert-error'>";
+					template += "<button type='button' class='close' data-dismiss='alert'>×</button>";
+					template += "<strong>Error!</strong> Unable to update tutor application.</div>";
+					$("#personal_info_student_2_alert").append(template);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+	},
+	
 	update_student_previous_education: function(query, error)
 	{
 		$.ajaxSetup (
@@ -229,7 +267,7 @@ var AJAXManager =
 			{
 				if (data.res == "TRUE")
 				{
-					success(data);
+					success(data.data);
 				}
 			},
 			error: function(jqXHR, textStatus, errorThrown) 
