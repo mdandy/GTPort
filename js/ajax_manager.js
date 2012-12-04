@@ -125,9 +125,13 @@ var AJAXManager =
 					template += "<strong>Success!</strong> Student profile has been updated.</div>";
 					$("#personal_info_student_1_alert").append(template);
 		
-					var query = { q : "tutor_application",
-					      		  username: sessionStorage.username };	  
-					AJAXManager.get_tutor_application(query, success);
+					//var query = { q : "tutor_application",
+					//      		  username: sessionStorage.username };	  
+					//AJAXManager.get_tutor_application(query, success);
+					
+					var register = UIManager.get_URL_Parameter("register");
+					if (register != "null")
+						window.location.href = "index.html";
 				}
 				else
 				{

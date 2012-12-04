@@ -191,9 +191,9 @@ class DAL
 	{
 		try
 		{
-			$sql = "SELECT Name_of_School, Year_of_Grad, Major, Degree, GPA";
-			$sql .= " FROM RegularUser NATURAL JOIN Education_History";
-			$sql .= " WHERE Username=:username";
+			$sql = "SELECT Name_of_School, Year_of_Grad, Major, Degree, GPA 
+					FROM Education_History WHERE Student_Id =
+						(SELECT Student_Id FROM Student WHERE Username=:username)";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
