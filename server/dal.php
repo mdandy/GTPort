@@ -540,20 +540,40 @@ class DAL
 	{
 		try
 		{
-			$sql = "INSERT INTO Department_Faculty (Dept_Id, Instructor_Id VALUES (
-                        :dept_id,
-                        (SELECT Instructor_Id FROM Faculty WHERE Username=:username)
-                    ) ON DUPLICATE KEY UPDATE Dept_Id=:uDept_id";
-			
+			$sql = "SELECT COUNT(*) FROM Department_Faculty
+					WHERE Instructor_Id=(SELECT Instructor_Id FROM Faculty WHERE Username=:username)";
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->bindParam(":dept_id", $dept_id, PDO::PARAM_INT);
-			$query->bindParam(":uDept_id", $dept_id, PDO::PARAM_INT);
-			return $query->execute();
+			$query->execute();
+			$num = $query->fetchColumn();
+			$query->closeCursor();
+				
+			if ($num > 0)
+			{
+				$sql = "UPDATE Department_Faculty SET Dept_Id=:uDept_id 
+						WHERE Instructor_Id=(SELECT Instructor_Id FROM Faculty WHERE Username=:username)";
+				
+				$query = self::$dbh->prepare($sql);
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":uDept_id", $dept_id, PDO::PARAM_INT);
+				return $query->execute();
+			}
+			else
+			{
+				$sql = "INSERT INTO Department_Faculty (Dept_Id, Instructor_Id) VALUES (
+							:dept_id,
+							(SELECT Instructor_Id FROM Faculty WHERE Username=:username)
+						)";
+				
+				$query = self::$dbh->prepare($sql);
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":dept_id", $dept_id, PDO::PARAM_INT);
+				return $query->execute();
+			}
 		}
 		catch(PDOException $e) 
 		{
-			// echo ("Error: " . $e->getMessage());
+			//echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}
@@ -562,17 +582,36 @@ class DAL
 	{
 		try
 		{
-			$sql = "INSERT INTO Faculty_Section (Instructor_Id, CRN
-                    ) VALUES (
-                        (SELECT Instructor_Id FROM Faculty WHERE Username=:username),
-                        :CRN
-                    ) ON DUPLICATE KEY UPDATE CRN=:uCRN";
-			
+			$sql = "SELECT COUNT(*) FROM Faculty_Section
+					WHERE Instructor_Id=(SELECT Instructor_Id FROM Faculty WHERE Username=:username)";
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-			$query->bindParam(":CRN", $CRN, PDO::PARAM_STR, 8);
-			$query->bindParam(":uCRN", $CRN, PDO::PARAM_STR, 8);
-			return $query->execute();
+			$query->execute();
+			$num = $query->fetchColumn();
+			$query->closeCursor();
+			
+			if ($num > 0)
+			{
+				$sql = "UPDATE Faculty_Section SET CRN=:uCRN 
+						WHERE Instructor_Id=(SELECT Instructor_Id FROM Faculty WHERE Username=:username)";
+				
+				$query = self::$dbh->prepare($sql);
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":uCRN", $CRN, PDO::PARAM_STR, 8);
+				return $query->execute();
+			}
+			else
+			{
+				$sql = "INSERT INTO Faculty_Section (Instructor_Id, CRN) VALUES (
+							(SELECT Instructor_Id FROM Faculty WHERE Username=:username),
+							:CRN
+						)";
+				
+				$query = self::$dbh->prepare($sql);
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":CRN", $CRN, PDO::PARAM_STR, 8);
+				return $query->execute();
+			}
 		}
 		catch(PDOException $e) 
 		{
@@ -588,7 +627,7 @@ class DAL
 	{
 		try
 		{
-			$sql = "SELECT S.CRN, CS.Title, CC.Code, S.Letter, RU.Name, S.Day, S.Time, S.Location
+			$sql = "SELECT DISTINCT S.CRN, CS.Title, CC.Code, S.Letter, RU.Name, S.Day, S.Time, S.Location
                     FROM
                         Department_Course AS DC
                         NATURAL JOIN Course_Section AS CS

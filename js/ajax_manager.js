@@ -310,6 +310,56 @@ var AJAXManager =
 		});
 	},
 	
+	get_courses: function(query, success)
+	{
+		$.ajaxSetup (
+		{
+			cache: true
+		});
+
+		var loadUrl = "server/profile.php?q=" + query.q + "&dept_id=" + query.dept_id;
+		$.ajax ({
+			type: "GET",
+			url: loadUrl,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+					success(data.data);
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+	},
+	
+	get_sections: function(query, success)
+	{
+		$.ajaxSetup (
+		{
+			cache: true
+		});
+
+		var loadUrl = "server/profile.php?q=" + query.q + "&course_title=" + query.course_title;
+		$.ajax ({
+			type: "GET",
+			url: loadUrl,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+					success(data.data);
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+	},
+	
 	/**
 	 * Report
 	 */

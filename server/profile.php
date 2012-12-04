@@ -167,11 +167,11 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		$dept_Id = $_GET["dept_id"];	
 		
 		DAL::connect();
-		$info = DAL::get_course_code($dept_Id);
+		$courses = DAL::get_course_code($dept_Id);
 		DAL::disconnect();
 		
-		if ($info != NULL)
-			$ret = array ("res" => "TRUE", "info" => $info[0], "department" => $department);
+		if ($courses != NULL)
+			$ret = array ("res" => "TRUE", "data" => $courses);
 		else
 			$ret = array ("res" => "FALSE");
 	}
@@ -180,11 +180,11 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		$course_title = $_GET["course_title"];	
 		
 		DAL::connect();
-		$info = DAL::get_section($course_title);
+		$sections = DAL::get_section($course_title);
 		DAL::disconnect();
 		
-		if ($info != NULL)
-			$ret = array ("res" => "TRUE", "info" => $info[0], "department" => $department);
+		if ($sections != NULL)
+			$ret = array ("res" => "TRUE", "data" => $sections);
 		else
 			$ret = array ("res" => "FALSE");
 	}

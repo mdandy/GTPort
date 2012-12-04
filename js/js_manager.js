@@ -225,7 +225,7 @@ var JSManager =
 					  position: position, 
 					  research_interests: research_interests,
 					  dept_id: department,
-					  crn: course };
+					  crn: section };
 					  
 		AJAXManager.update_faculty_info(query);
 	}

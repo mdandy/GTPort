@@ -442,5 +442,57 @@ var UIManager =
 	populate_tutor_application: function(data)
 	{
 		
-	}
+	},
+	
+	populate_courses: function()
+	{
+		var form = document.forms["personal_info_faculty_form"];
+		var dept_id = form.department.value;
+		
+		var query = {q : "course",
+					dept_id : dept_id}
+		AJAXManager.get_courses(query, UIManager.populate_courses_success);
+	},
+	
+	populate_courses_success: function(data)
+	{
+		// populate courses dropdown menu
+		if (data.length > 0)
+		{
+			$("#course").empty();
+			for (var index in data)
+			{
+				var title = data[index].Title;
+				var code = data[index].Code;
+				
+				$("#course").append(new Option(code,title));	
+			}
+		}
+	},
+	
+	populate_sections: function()
+	{
+		var form = document.forms["personal_info_faculty_form"];
+		var course_title = form.course.value;
+		
+		var query = {q : "section",
+					course_title : encodeURIComponent(course_title)}
+		AJAXManager.get_sections(query, UIManager.populate_section_success);
+	},
+	
+	populate_section_success: function(data)
+	{
+		// populate section dropdown menu
+		if (data.length > 0)
+		{
+			$("#section").empty();
+			for (var index in data)
+			{
+				var crn = data[index].CRN;
+				var letter = data[index].Letter;
+				
+				$("#section").append(new Option(letter,crn));	
+			}
+		}
+	},
 }

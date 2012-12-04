@@ -56,7 +56,7 @@
 	<div class="control-group">
 		<label class="control-label">Department</label>
 		<div class="controls">
-			<select id="department" name="department">
+			<select id="department" name="department" onChange="UIManager.populate_courses()">
 				<option value="1">Aerospace Engineering</option>
 				<option value="2">Biology</option>
 				<option value="3">Biomedical Engineering</option>
@@ -80,7 +80,7 @@
 	<div class="control-group">
 		<label class="control-label">Course</label>
 		<div class="controls">
-			<select id="course" name="course">
+			<select id="course" name="course" onChange="UIManager.populate_sections()">
 				<!--
 				<option value="CS1000">CS 1000</option>
 				<option value="CS2000">CS 2000</option>
