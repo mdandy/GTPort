@@ -349,9 +349,31 @@ var UIManager =
 	
 	init_assign_tutor: function()
 	{
+		var query = { q : "applicant",
+					  username: sessionStorage.username };
+
+		AJAXManager.get_tutor_applicants(query, UIManager.init_assign_tutor_success, UIManager.init_assign_tutor_error);
+	},
+	
+	init_assign_tutor_success: function(data)
+	{
+		$("#tutor_applicants").empty();		
+		for (var index in data) {
+			var row = data[index];
+			$("#tutor_applicants").append(new Option(row.Name, row.Student_Id));
+		}
+
 		$("#tutor_applicants").pickList({
 			sourceListLabel:    "Applied",
-        	targetListLabel:    "Approved"
+     		targetListLabel:    "Approved"
+		});
+	},
+	
+	init_assign_tutor_error: function()
+	{
+		$("#tutor_applicants").pickList({
+			sourceListLabel:    "Applied",
+     		targetListLabel:    "Approved"
 		});
 	},
 	
@@ -362,12 +384,12 @@ var UIManager =
 	
 	init_find_tutors: function()
 	{
-		
+		$("#tutors").empty();	
 	},
 	
 	init_tutor_logbook: function()
 	{
-		
+		$("#tname").val(sessionStorage.username);
 	},
 	
 	init_report_admin: function()
@@ -655,5 +677,85 @@ var UIManager =
         }        
         $("#registration").empty();
         $("#registration").html(template);
-    }
+    },
+	
+	/**
+	 * Assign Tutor
+	 */
+	assign_tutor: function()
+	{
+		var form = document.forms["assign_tutor_form"];
+		var applicants = form.tutor_applicants;
+		var student_ids = "";
+		for (var index=0; index<applicants.length; index++) 
+		{
+			var app = applicants[index];
+			if (app.selected == true)
+				student_ids += app.value + "::";
+		}
+
+		var query = { q : "assign", 
+								username: sessionStorage.username,
+								student_id: student_ids };
+
+		AJAXManager.assign_tutor(query, UIManager.assign_tutor_success);
+	},
+
+	assign_tutor_success: function(data)
+	{
+		var template = "<div class='alert alert-success'>";
+		template += "<button type='button' class='close' data-dismiss='alert'>×</button>";
+		template += "<strong>Success!</strong> Tutors were added.</div>";
+		$("#assign_tutor_alert").append(template);
+	},
+	
+	
+	/**
+	 * Find Tutor
+	 */
+	search_by_course_code: function()
+	{
+		$("#keyword-search").val("");
+
+		$("#tutors").empty();
+
+		if ($("#course-search").val() != "")
+		{
+			var query = { q: "find_by_code",
+									search_entry: encodeURIComponent($("#course-search").val()) };
+
+			AJAXManager.get_tutors(query, UIManager.search_results);
+		}
+	},
+
+	search_by_keyword: function()
+	{
+		$("#course-search").val("");
+
+		$("#tutors").empty();
+
+		if ($("#keyword-search").val() != "")
+		{
+			var query = { q: "find_by_keyword",
+									search_entry: encodeURIComponent($("#keyword-search").val()) };
+
+			AJAXManager.get_tutors(query, UIManager.search_results);
+		}
+	},
+
+	search_results: function(data)
+	{
+		var template = "";
+		for(var index in data)
+		{
+			template += "<tr>";
+			template += "<td>" + data[index].Code + "</td>";
+			template += "<td>" + data[index].Title + "</td>";
+			template += "<td>" + data[index].Name + "</td>";
+			template += "<td>" + data[index].Email_Id + "</td>";
+			template += "</tr>";
+		}
+		$("#tutors").html(template);
+	},
+	
 }

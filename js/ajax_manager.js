@@ -497,4 +497,85 @@ var AJAXManager =
 			}
 		});
     },
+	
+	/**
+	 * Tutor
+	 */
+	get_tutor_applicants: function(query, success, error)
+	{
+		$.ajaxSetup (
+		{
+			cache: true
+		});
+
+		var loadUrl = "server/tutor.php?q=" + query.q + "&username=" + query.username;
+		$.ajax ({
+			type: "GET",
+			url: loadUrl,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+					success(data.data);
+				else
+					error();
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+	},
+
+	assign_tutor: function(query, success)
+	{
+		$.ajaxSetup (
+		{
+			cache: true
+		});
+
+		var loadUrl = "server/tutor.php";
+		$.ajax ({
+			type: "POST",
+			url: loadUrl,
+			data: query,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+					success(data);
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+	},
+
+	get_tutors: function(query, success)
+	{
+		$.ajaxSetup (
+		{
+			cache: true
+		});
+
+		var loadUrl = "server/tutor.php?q=" + query.q + "&search_entry=" + query.search_entry;
+		$.ajax ({
+			type: "GET",
+			url: loadUrl,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+					success(data.data);
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+	},
 };
