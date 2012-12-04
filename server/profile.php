@@ -142,6 +142,19 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		else
 			$ret = array ("res" => "FALSE");
 	}
+	else if(strcmp($q, "department") == 0)
+	{
+		$username = $_GET["username"];	
+		
+		DAL::connect();
+		$info = DAL::get_student_information($username);
+		DAL::disconnect();
+		
+		if ($info != NULL)
+			$ret = array ("res" => "TRUE", "data" => $info[0]["Major"]);
+		else
+			$ret = array ("res" => "FALSE");
+	}
 	else if(strcmp($q, "faculty") == 0)
 	{
 		$username = $_GET["username"];	

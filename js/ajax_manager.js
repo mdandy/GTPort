@@ -258,7 +258,35 @@ var AJAXManager =
 	{
 		$.ajaxSetup (
 		{
-			cache: false
+			cache: true
+		});
+
+		var loadUrl = "server/profile.php?q=" + query.q + "&username=" + query.username;
+		$.ajax ({
+			type: "GET",
+			url: loadUrl,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+				{
+					success(data.data);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+	},
+	
+	get_student_department: function(query, success)
+	{
+		
+		$.ajaxSetup (
+		{
+			cache: true
 		});
 
 		var loadUrl = "server/profile.php?q=" + query.q + "&username=" + query.username;

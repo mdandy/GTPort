@@ -908,34 +908,41 @@ class DAL
                     ) VALUES (
                         (SELECT Student_Id AS tutor_Id FROM Student WHERE Username=:username), 
                         :student_id, 
-                        (SELECT CRN FROM Course_Code NATURAL JOIN Course_Section
-                                                     WHERE Code=:course_code))";
+                        (
+							SELECT A.CRN FROM (SELECT CRN FROM Course_Code NATURAL JOIN Course_Section WHERE Code=:course_code) AS A
+							INNER JOIN Student_Section AS B ON A.CRN=B.CRN WHERE B.Student_Id=:uStudent_id
+						)
+					)";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
 			$query->bindParam(":student_id", $student_id, PDO::PARAM_INT);
+			$query->bindParam(":uStudent_id", $student_id, PDO::PARAM_INT);
 			$query->bindParam(":course_code", $course_code, PDO::PARAM_STR, 64);
 			$query->execute();
 
 			$sql = "INSERT INTO Tutor_Log_DateTime (
                         Tutor_Id, Student_Id, CRN, `DateTime`
                     ) VALUES (
-                        (SELECT Student_Id AS tutor_Id FROM STUDENT WHERE Username=:username),
+                        (SELECT Student_Id AS tutor_Id FROM Student WHERE Username=:username),
                         :student_id, 
-                        (SELECT CRN FROM Course_Code NATURAL JOIN Course_Section
-                                    WHERE Code = :course_code), 
+                        (
+							SELECT A.CRN FROM (SELECT CRN FROM Course_Code NATURAL JOIN Course_Section WHERE Code=:course_code) AS A
+							INNER JOIN Student_Section AS B ON A.CRN=B.CRN WHERE B.Student_Id=:uStudent_id
+						), 
                         NOW()
                     )";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
-            $query->bindParam(":student_id", $student_id);
+            $query->bindParam(":student_id", $student_id, PDO::PARAM_INT);
+			$query->bindParam(":uStudent_id", $student_id, PDO::PARAM_INT);
 			$query->bindParam(":course_code", $course_code, PDO::PARAM_STR, 64);
 			return $query->execute();
 		}
 		catch(PDOException $e) 
 		{
-			// echo ("Error: " . $e->getMessage());
+			echo ("Error: " . $e->getMessage());
 		}
 		return false;
 	}

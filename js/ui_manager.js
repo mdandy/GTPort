@@ -339,7 +339,32 @@ var UIManager =
 	
 	init_course_selection: function()
 	{
+        var query = { q : "department",
+					  username: sessionStorage.username };
+					  
+        AJAXManager.get_student_department(query, UIManager.init_course_selection_success);
+	},
+	
+	init_course_selection_success: function(data)
+	{
+		var input = 0;
+		if (data == "AE")
+			input = 1;
+		else if (data == "BIO")
+			input = 2;
+		else if (data == "BME")
+			input = 3;
+		else if (data == "CS")
+			input = 4;
+		else if (date == "ECE")
+			input = 5;
 		
+        var term = "Spring2013";
+        var query = { q : "course",
+					  dept_id: input,
+                      term: term };
+					  
+        AJAXManager.get_courses(query, UIManager.populateCourseSuccess2);
 	},
 	
 	init_course_selection2: function()
@@ -625,10 +650,10 @@ var UIManager =
         UIManager.load_page('course_selection.html', UIManager.populateCourseSuccess2);
     },
     
-    populateCourseSuccess2: function()
+    populateCourseSuccess2: function(data)
     {
-        
-        var data = UIManager.course_data;
+        if (data == undefined)
+        	data = UIManager.course_data;
         var template = "";
         
         for(var i in data){
