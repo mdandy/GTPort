@@ -310,7 +310,7 @@ var AJAXManager =
 		});
 	},
 	
-	get_courses: function(query, success)
+	get_courses_list: function(query, success)
 	{
 		$.ajaxSetup (
 		{
@@ -335,7 +335,7 @@ var AJAXManager =
 		});
 	},
 	
-	get_sections: function(query, success)
+	get_sections_list: function(query, success)
 	{
 		$.ajaxSetup (
 		{
@@ -392,4 +392,67 @@ var AJAXManager =
 			}
 		});
 	},
+	
+	/**
+	 * Courses
+	 */
+	get_courses: function(query, success, error){
+        $.ajaxSetup (
+		{
+			cache: true
+		});
+
+		var loadUrl = "server/course.php?q=" + query.q + "&dept_id=" + query.dept_id + "&term=" + query.term;
+		$.ajax ({
+			type: "GET",
+			url: loadUrl,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+			success: function(data) 
+			{
+				if (data.res == "TRUE")
+					success(data.data);
+                else
+				{	
+					if (error !== undefined)
+						error(data);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+    },
+    
+    register_course: function(query, success, error){
+        $.ajaxSetup (
+		{
+			cache: true
+		});
+
+		var loadUrl = "server/course.php";
+		$.ajax ({
+			type: "POST",
+			url: loadUrl,
+			data: query,
+			dataType: "json",
+			timeout: 5000, //5 seconds
+            success: function(data) 
+			{
+				if (data.res == "TRUE"){
+					success(data);
+                }
+                else
+				{	
+					if (error !== undefined)
+						error(data);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) 
+			{
+				console.error(textStatus);
+			}
+		});
+    },
 };

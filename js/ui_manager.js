@@ -1,5 +1,9 @@
 var UIManager =
 {
+	course_data:				null,
+    register_course_count:      null,
+    selectIndex:                null,
+	
 	/**
 	 * General loading component script
 	 */
@@ -451,7 +455,7 @@ var UIManager =
 		
 		var query = {q : "course",
 					dept_id : dept_id}
-		AJAXManager.get_courses(query, UIManager.populate_courses_success);
+		AJAXManager.get_courses_list(query, UIManager.populate_courses_success);
 	},
 	
 	populate_courses_success: function(data)
@@ -470,6 +474,9 @@ var UIManager =
 		}
 	},
 	
+	/**
+	 * Faculty Profile
+	 */
 	populate_sections: function()
 	{
 		var form = document.forms["personal_info_faculty_form"];
@@ -477,7 +484,7 @@ var UIManager =
 		
 		var query = {q : "section",
 					course_title : encodeURIComponent(course_title)}
-		AJAXManager.get_sections(query, UIManager.populate_section_success);
+		AJAXManager.get_sections_list(query, UIManager.populate_section_success);
 	},
 	
 	populate_section_success: function(data)
@@ -495,4 +502,138 @@ var UIManager =
 			}
 		}
 	},
+	
+	/**
+	 * Course Registration
+	 */
+	 register_course: function(){
+        var data = UIManager.course_data;
+        
+        var crn_str = "";
+        var mode_str = "";
+        for (var i = 0; i < UIManager.selectedIndex.length; i++) {
+            var crn = data[UIManager.selectedIndex[i]].CRN;
+            var gmode = $('#grading_mode'+i).val();
+            data[UIManager.selectedIndex[i]].gmode = gmode;
+            crn_str += crn + "::";
+            mode_str += gmode + "::";
+        }  
+        
+        var username = sessionStorage.username;
+        
+        var query = { username: username,
+              crn: crn_str,
+              grade_mode: mode_str };
+                  
+        AJAXManager.register_course(query, UIManager.registerCourseSuccess);
+    },
+    
+    registerCourseSuccess: function(data){
+        UIManager.load_page('registration_complete.html', UIManager.populateRegistrationComplete);
+    },
+    
+    populateRegistrationComplete: function(){
+        var data = UIManager.course_data;
+        var template = "";
+        
+        for (var i = 0; i < UIManager.selectedIndex.length; i++) {
+            
+            var gmode = data[UIManager.selectedIndex[i]].gmode;
+            
+            template += "<tr>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Code +"</td>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Title +"</td>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Letter +"</td>";
+            template += "<td>"+ gmode +"</td>";
+            template += "</tr>";
+        }        
+        $("#registration_complete").empty();
+        $("#registration_complete").html(template);
+    },
+    
+    populateCourse: function(){
+        var form = document.forms["select_department_form"];
+        var input = form.department.value;
+        var term = "Spring2013";
+        
+        var query = { q : "course",
+					  dept_id: input,
+                      term: term };
+					  
+        AJAXManager.get_courses(query, UIManager.populateCourseSuccess);
+    },
+    
+    populateCourseSuccess: function(data) {
+        UIManager.course_data = data;
+        UIManager.load_page('course_selection.html', UIManager.populateCourseSuccess2);
+    },
+    
+    returnToCourses: function() {
+        UIManager.load_page('course_selection.html', UIManager.populateCourseSuccess2);
+    },
+    
+    populateCourseSuccess2: function()
+    {
+        
+        var data = UIManager.course_data;
+        var template = "";
+        
+        for(var i in data){
+            template += "<tr>";
+            template += "<td><input id=\"registered"+i+"\" name=\"registered\" type=\"checkbox\"></td>";
+            template += "<td>"+ data[i].CRN +"</td>";
+            template += "<td>"+ data[i].Title +"</td>";
+            template += "<td>"+ data[i].Code +"</td>";
+            template += "<td>"+ data[i].Letter +"</td>";
+            template += "<td>"+ data[i].Name +"</td>";
+            template += "<td>"+ data[i].Day +"</td>";
+            template += "<td>"+ data[i].Time +"</td>";
+            template += "<td>"+ data[i].Location +"</td>";
+            template += "</tr>";
+        }        
+        $("#registration").empty();
+        $("#registration").html(template);
+    },
+    
+    populate_course_section2: function(){
+        
+        var form = document.forms["course_selection_form"];
+        
+        UIManager.selectedIndex = new Array();
+        var data = UIManager.course_data;
+        for(var i in data){
+            var isChecked = $('#registered'+i).attr('checked')?true:false;
+            if(isChecked){
+                UIManager.selectedIndex.push(i);
+            }
+        }
+        
+        UIManager.register_course_count = UIManager.selectedIndex.length;
+        
+        UIManager.load_page('course_selection2.html', UIManager.populate_course_section2_callback);
+    },
+    
+    populate_course_section2_callback: function(){
+        var template = "";
+        
+        var data = UIManager.course_data;
+        
+        for (var i = 0; i < UIManager.selectedIndex.length; i++) {
+            template += "<tr>";
+            template += "<td id=\"CRN" + i + "\">"+data[UIManager.selectedIndex[i]].CRN +"</td>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Title +"</td>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Code +"</td>";
+            template += "<td>"+ data[UIManager.selectedIndex[i]].Letter +"</td>";
+            template += "<td>";
+            template += "<select id=\"grading_mode" + i + "\" name=\"grading_mode"+ i +"\">";
+			template += "<option value=\"registered\">Registered</option>";
+			template += "<option value=\"audit\">Audit</option>";
+			template += "<option value=\"pass_fail\">Pass/Fail</option>";
+            template += "</select>";
+			template += "</td>";
+            template += "</tr>";
+        }        
+        $("#registration").empty();
+        $("#registration").html(template);
+    }
 }
