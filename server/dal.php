@@ -359,7 +359,7 @@ class DAL
 		try
 		{
 			$sql = "SELECT DISTINCT Name, Email_Id, DOB, Address, Permanent_Address, Gender, 
-                        Contact_No, Position, Research_Interest, Dept_Id, Dept_Name, COURSE_TITLE.Title, 
+                        Contact_No, Position, Research_Interest, FACULTY_EXTRA.Dept_Id, Dept_Name, COURSE_TITLE.Title, 
 						FACULTY_SECTION.CRN, Letter, Course
                     FROM (
                         SELECT Name, Email_Id, DOB, Address, Permanent_Address, Gender, 
@@ -384,9 +384,9 @@ class DAL
                         FROM Course_Section
                     ) AS COURSE_TITLE ON FACULTY_SECTION.CRN=COURSE_TITLE.CRN
                     LEFT JOIN (
-                        SELECT Title, Code AS Course
+                        SELECT Title, Code AS Course, Dept_Id
                         FROM Course_Code
-                    ) AS COURSE_CODE ON COURSE_TITLE.Title=COURSE_CODE.Title";
+                    ) AS COURSE_CODE ON COURSE_TITLE.Title=COURSE_CODE.Title AND FACULTY_EXTRA.Dept_Id=COURSE_CODE.Dept_Id";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
@@ -800,7 +800,7 @@ class DAL
 			$sql = "SELECT Code, Title, RegularUser.Name, RegularUser.Email_Id 
                     FROM (
                         SELECT Course_Code.Title, Code, Student_ID
-                            FROM Course_Code, Tutor_Course
+                            FROM Course_Code NATURAL JOIN Tutor_Course
                             WHERE Course_Code.Code LIKE '%$search_entry%'
                     ) AS MyTable
                     NATURAL JOIN Student
@@ -824,7 +824,7 @@ class DAL
 			$sql = "SELECT Code, Title, RegularUser.Name, RegularUser.Email_Id 
                     FROM (
                         SELECT Course_Code.Title, Code, Student_Id
-                            FROM Course_Code, Tutor_Course
+                            FROM Course_Code NATURAL JOIN Tutor_Course
                             WHERE Course_Code.Title LIKE '%$search_entry%'
                     ) AS MyTable
                     NATURAL JOIN Student

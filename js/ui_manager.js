@@ -390,6 +390,17 @@ var UIManager =
 	init_tutor_logbook: function()
 	{
 		$("#tname").val(sessionStorage.username);
+		
+		var date = new Date();
+		var yyyy = date.getFullYear();
+		var mm = date.getMonth() + 1;
+		var dd = date.getDate();
+
+		var hh = date.getHours();
+		var min = date.getMinutes();
+		var ss = date.getSeconds();
+
+		$("#time").html(yyyy + "-" + mm + "-" + dd + " " + hh + ":" + min + ":" + ss);
 	},
 	
 	init_report_admin: function()

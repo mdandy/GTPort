@@ -65,12 +65,12 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		$username = $_GET["username"];	
 		
 		DAL::connect();
-		$tutor = DAL::get_tutor_applicants($username);
+		$info = DAL::get_student_information($username);
 		$code = DAL::get_tutor_course_code($username);
 		DAL::disconnect();
 		
-		if ($tutor != NULL)
-			$ret = array ("res" => "TRUE", "data" => $tutor, "code" => $code);
+		if ($code != NULL)
+			$ret = array ("res" => "TRUE", "name" => $info[0]["Name"], "code" => $code);
 		else
 			$ret = array ("res" => "FALSE");
 	}
