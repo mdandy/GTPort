@@ -63,7 +63,7 @@ var JSManager =
 			return;
 		}
 		
-		sessionStorage.register_type = "faculty";
+		sessionStorage.register_type = form.user_type.value;
 		
 		var query = { q : "register",
 					  username: username, 
