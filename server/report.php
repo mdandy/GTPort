@@ -25,7 +25,7 @@ if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		$report = DAL::get_faculty_report();
 		DAL::disconnect();
 		
-		// Merge data
+		// Merge data for number of meeting
 		$result = array();
 		$more_than_three = $report["more_than_three"];
 		$one_to_three = $report["one_to_three"];
@@ -88,6 +88,22 @@ if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 			}
 		}
 		
+		// merge crosslisted
+		$map = array();
+		foreach ($result as $key => $value)
+		{
+			$course_title = $result[$key]["Title"];
+			if (array_key_exists($course_title, $map))
+			{
+				$index = $map[$course_title];
+				$crosslisted = $index . "/ " . $key;
+				$result[$crosslisted] = $result[$index];
+				unset($result[$index]);
+				unset($result[$key]);
+			}
+			else
+				$map[$course_title] = $key;
+		}
 		
 		if ($report != NULL)
 			$ret = array ("res" => "TRUE", "data" => $result);
