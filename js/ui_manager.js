@@ -514,6 +514,7 @@ var UIManager =
 	
 	init_report_faculty_success: function(data)
 	{
+		/*
 		var template = "";
 		var a = data["more_than_three"];
 		var b = data["one_to_three"];
@@ -546,7 +547,73 @@ var UIManager =
 			template += "<td>" + c[y].Average_Grade + "</td>";
 			template += "</tr>";
 		}
-		$("#report").html(template)
+		$("#report").html(template);
+		*/
+		
+		var template = "";
+		
+		for (var index in data)
+		{
+			var print_header = true;
+			
+			// more than three
+			if (data[index].more_than_three !== undefined)
+			{
+				template += "<tr>";
+				if (print_header)
+				{
+					var code = index;
+					var title = data[index].Title;
+					template += "<td rowspan='3'>" + code + "</td>";
+					template += "<td rowspan='3'>" + title + "</td>";
+					print_header = false;
+				}
+				
+				var average = data[index].more_than_three;
+				template += "<td>&gt; 3</td>";
+				template += "<td>" + average + "</td>";
+				template += "</tr>"
+			}
+			
+			// one to three
+			if (data[index].one_to_three !== undefined)
+			{
+				template += "<tr>";
+				if (print_header)
+				{
+					var code = index;
+					var title = data[index].Title;
+					template += "<td rowspan='2'>" + code + "</td>";
+					template += "<td rowspan='2'>" + title + "</td>";
+					print_header = false;
+				}
+				
+				var average = data[index].one_to_three;
+				template += "<td>1 - 3</td>";
+				template += "<td>" + average + "</td>";
+				template += "</tr>"
+			}
+			
+			// zero
+			if (data[index].zero !== undefined)
+			{
+				template += "<tr>";
+				if (print_header)
+				{
+					var code = index;
+					var title = data[index].Title;
+					template += "<td rowspan='1'>" + code + "</td>";
+					template += "<td rowspan='1'>" + title + "</td>";
+					print_header = false;
+				}
+				
+				var average = data[index].zero;
+				template += "<td>None</td>";
+				template += "<td>" + average + "</td>";
+				template += "</tr>"
+			}
+		}
+		$("#report").html(template);
 	},
 	
 	init_report_student: function()
