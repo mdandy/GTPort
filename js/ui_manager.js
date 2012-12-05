@@ -3,6 +3,7 @@ var UIManager =
 	course_data:				null,
     register_course_count:      null,
     selectIndex:                null,
+	major:						null,
 	
 	/**
 	 * General loading component script
@@ -349,15 +350,31 @@ var UIManager =
 	{
 		var input = 0;
 		if (data == "AE")
+		{
 			input = 1;
+			UIManager.major = "Aerospace Engineering";
+		}
 		else if (data == "BIO")
+		{
 			input = 2;
+			UIManager.major = "Biology";
+		}
 		else if (data == "BME")
+		{
 			input = 3;
+			UIManager.major = "Biomedical Engineering";
+		}
 		else if (data == "CS")
+		{
 			input = 4;
-		else if (date == "ECE")
+			UIManager.major = "Computer Science";
+		}
+		else if (data == "ECE")
+		{
 			input = 5;
+			UIManager.major = "Electrical & Computer Engineering";
+		}
+		$("#department").html(UIManager.major);
 		
         var term = "Spring2013";
         var query = { q : "course",
@@ -369,7 +386,7 @@ var UIManager =
 	
 	init_course_selection2: function()
 	{
-		
+		$("#department").html(UIManager.major);
 	},
 	
 	init_assign_tutor: function()
@@ -686,13 +703,15 @@ var UIManager =
     },
     
     returnToCourses: function() {
-        UIManager.load_page('course_selection.html', UIManager.populateCourseSuccess2);
+        UIManager.load_page('course_selection.html', UIManager.init_course_selection);
     },
     
     populateCourseSuccess2: function(data)
-    {
+    {	
         if (data == undefined)
         	data = UIManager.course_data;
+		else
+			UIManager.course_data = data;
         var template = "";
         
         for(var i in data){
@@ -712,8 +731,8 @@ var UIManager =
         $("#registration").html(template);
     },
     
-    populate_course_section2: function(){
-        
+    populate_course_section2: function()
+	{   
         var form = document.forms["course_selection_form"];
         
         UIManager.selectedIndex = new Array();
@@ -731,6 +750,8 @@ var UIManager =
     },
     
     populate_course_section2_callback: function(){
+		$("#department").html(UIManager.major);
+		
         var template = "";
         
         var data = UIManager.course_data;
@@ -832,5 +853,4 @@ var UIManager =
 		}
 		$("#tutors").html(template);
 	},
-	
 }
