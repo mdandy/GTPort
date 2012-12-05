@@ -166,7 +166,7 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 		$course_title = $info[0]["Title"];
 		
 		$course = DAL::get_course_code($dept_id);
-		$section = DAL::get_section($course_title);
+		$section = DAL::get_section($course_title, $dept_id);
 		//$department = DAL::get_department();
 		DAL::disconnect();
 		
@@ -191,9 +191,10 @@ else if (strcmp($_SERVER['REQUEST_METHOD'], 'GET') == 0)
 	else if(strcmp($q, "section") == 0)
 	{
 		$course_title = $_GET["course_title"];	
+		$dept_id = $_GET["dept_id"];
 		
 		DAL::connect();
-		$sections = DAL::get_section($course_title);
+		$sections = DAL::get_section($course_title, $dept_id);
 		DAL::disconnect();
 		
 		if ($sections != NULL)

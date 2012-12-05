@@ -615,9 +615,11 @@ var UIManager =
 	{
 		var form = document.forms["personal_info_faculty_form"];
 		var course_title = form.course.value;
+		var dept_id = form.department.value;;
 		
 		var query = {q : "section",
-					course_title : encodeURIComponent(course_title)}
+					course_title : encodeURIComponent(course_title),
+					dept_id : dept_id}
 		AJAXManager.get_sections_list(query, UIManager.populate_section_success);
 	},
 	

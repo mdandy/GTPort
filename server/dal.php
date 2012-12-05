@@ -436,15 +436,16 @@ class DAL
 		return false;
 	}
 	
-	public static function get_section($course_title)
+	public static function get_section($course_title, $dept_id)
 	{
 		try
 		{
 			$sql = "SELECT CRN, Letter FROM Section NATURAL JOIN Course_Section
-                    WHERE Title=:course_title";
+                    WHERE Title=:course_title AND Dept_Id=:dept_Id";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":course_title", $course_title, PDO::PARAM_STR, 64);
+			$query->bindParam(":dept_Id", $dept_id, PDO::PARAM_INT);
 			$query->execute();
 			return $query->fetchAll(PDO::FETCH_ASSOC);
 		}
@@ -769,6 +770,25 @@ class DAL
                             WHERE Instructor_Id=(
                                 SELECT Instructor_Id FROM Faculty WHERE Username=:username)
                         )
+                    )";
+			$query = self::$dbh->prepare($sql);
+			
+			for ($i = 0; $i < count($student_Ids); $i++)
+			{
+				if (strlen($student_Ids[$i]) == 0)
+					continue;
+				
+				$query->bindParam(":username", $username, PDO::PARAM_STR, 64);
+				$query->bindParam(":student_Id", intval($student_Ids[$i]), PDO::PARAM_INT);
+				$successful &= $query->execute();
+			}
+			
+			$sql = "DELETE FROM Tutor_Application
+					WHERE Student_Id=:student_Id 
+					AND Title=
+						(SELECT DISTINCT Title FROM Faculty_Section NATURAL JOIN Course_Section
+                            WHERE Instructor_Id=(
+                                SELECT Instructor_Id FROM Faculty WHERE Username=:username)
                     )";
 			$query = self::$dbh->prepare($sql);
 			

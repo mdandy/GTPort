@@ -416,7 +416,7 @@ var AJAXManager =
 			cache: true
 		});
 
-		var loadUrl = "server/profile.php?q=" + query.q + "&course_title=" + query.course_title;
+		var loadUrl = "server/profile.php?q=" + query.q + "&course_title=" + query.course_title + "&dept_id=" + query.dept_id;
 		$.ajax ({
 			type: "GET",
 			url: loadUrl,
