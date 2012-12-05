@@ -204,9 +204,11 @@ var JSManager =
 			}
 		}
 		
+		/*
 		var register = UIManager.get_URL_Parameter("register");
 		if (register != "null")
 				window.location.href = "index.html";
+		*/
 	},
 	
 	/**

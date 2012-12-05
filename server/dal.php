@@ -1069,7 +1069,7 @@ class DAL
 					) AS STUDENT_GRADE 
 					ON COURSE_REG.CRN=STUDENT_GRADE.CRN
 					AND TUTOR_MORE_THAN_3.Student_Id=STUDENT_GRADE.Student_Id
-					GROUP BY Code, Title";
+					GROUP BY Code, Title ORDER BY Code";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->execute();
@@ -1118,7 +1118,7 @@ class DAL
 					) AS STUDENT_GRADE 
 					ON COURSE_REG.CRN=STUDENT_GRADE.CRN
 					AND TUTOR_BETWEEN_1_3.Student_Id=STUDENT_GRADE.Student_Id
-					GROUP BY Code, Title";
+					GROUP BY Code, Title ORDER BY Code";
 					
 			$query = self::$dbh->prepare($sql);
 			$query->execute();
@@ -1166,7 +1166,7 @@ class DAL
 					) AS STUDENT_GRADE 
 					ON COURSE_REG.CRN=STUDENT_GRADE.CRN
 					AND TUTOR_BETWEEN_1_3.Student_Id=STUDENT_GRADE.Student_Id
-					GROUP BY Code, Title";
+					GROUP BY Code, Title ORDER BY Code";
 					
 			$query = self::$dbh->prepare($sql);
 			$query->execute();
