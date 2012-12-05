@@ -628,21 +628,16 @@ class DAL
 	{
 		try
 		{
-			$sql = "SELECT DISTINCT S.CRN, CS.Title, CC.Code, S.Letter, RU.Name, S.Day, S.Time, S.Location
-                    FROM
-                        Department_Course AS DC
-                        NATURAL JOIN Course_Section AS CS
-                        NATURAL JOIN Course_Code AS CC
-                        NATURAL JOIN Section AS S
-                        NATURAL JOIN Faculty_Section AS FS
-                        NATURAL JOIN Faculty AS F
-                        NATURAL JOIN RegularUser AS RU
-                    WHERE 
-                        Dept_Id = :deptId AND 
-                        Term=:term";
+			$sql = "SELECT * FROM 
+						(SELECT * FROM (SELECT * FROM Section AS S NATURAL JOIN Course_Code AS CC) AS A 
+						NATURAL JOIN Course_Section CS WHERE Dept_Id = :deptId 
+						OR (Dept_Id<>:uDeptId AND Title IN (SELECT Title FROM Course_Code WHERE Dept_Id=:aDeptId)) 
+						AND Term=:term) AS C NATURAL JOIN Faculty_Section NATURAL JOIN Faculty NATURAL JOIN RegularUser";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->bindParam(":deptId", $deptId);
+			$query->bindParam(":uDeptId", $deptId);
+			$query->bindParam(":aDeptId", $deptId);
 			$query->bindParam(":term", $term, PDO::PARAM_STR, 16);
 			$query->execute();
 			return $query->fetchAll(PDO::FETCH_ASSOC);
@@ -1011,7 +1006,7 @@ class DAL
 								AND Grade='F'
 							) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
 						) AS GRADE_TOTAL GROUP BY CRN
-					) AS GRADE_TOTAL";
+					) AS GRADE_TOTAL ORDER BY Code";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->execute();
@@ -1233,7 +1228,7 @@ class DAL
                                 AND Grade='F'
                             ) AS GRADE_F JOIN (SELECT 0 AS Grade) AS GRADE_VAL_0
                         ) AS GRADE_TOTAL GROUP BY CRN
-                    ) AS COURSE_GRADE ON FACULTY_INFO.CRN=COURSE_GRADE.CRN";
+                    ) AS COURSE_GRADE ON FACULTY_INFO.CRN=COURSE_GRADE.CRN ORDER BY Name";
 			
 			$query = self::$dbh->prepare($sql);
 			$query->execute();
