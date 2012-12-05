@@ -316,7 +316,9 @@ var UIManager =
 		form.research.value = "";
 		for (var index in data.info)
 		{
-			form.research.value += data.info[index].Research_Interest + "\n";
+			var reserach_interest = data.info[index].Research_Interest;
+			if (reserach_interest != null)
+				form.research.value +=  + "\n";
 		}
 	},
 	
